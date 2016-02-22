@@ -27,5 +27,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="流式布局" />
+      <Button
+        android:id="@+id/btn_aige_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="会动的圆" />
 
 </LinearLayout>

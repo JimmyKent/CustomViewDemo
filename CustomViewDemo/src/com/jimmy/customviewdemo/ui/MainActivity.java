@@ -21,7 +21,7 @@ public class MainActivity extends Activity {
 				startActivity(intent);
 			}
 		});
-		
+
 		findViewById(R.id.btn_measure_once).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -29,11 +29,18 @@ public class MainActivity extends Activity {
 				startActivity(intent);
 			}
 		});
-		
+
 		findViewById(R.id.btn_flow_view).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(MainActivity.this, FlowViewAty.class);
+				startActivity(intent);
+			}
+		});
+		findViewById(R.id.btn_aige_1).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(MainActivity.this, MovingCircleAty.class);
 				startActivity(intent);
 			}
 		});
