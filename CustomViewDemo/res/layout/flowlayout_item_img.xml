@@ -2,11 +2,11 @@
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginRight="8dp"
-    android:layout_marginTop="8dp"
+    android:layout_marginRight="3dp"
+    android:layout_marginTop="3dp"
     android:paddingBottom="4dp"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
+    android:paddingLeft="2dp"
+    android:paddingRight="2dp"
     android:paddingTop="4dp" >
 
 </ImageView>

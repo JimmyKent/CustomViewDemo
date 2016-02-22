@@ -2,8 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="${relativePackage}.${activityClass}"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    tools:context="${relativePackage}.${activityClass}" >
 
     <TextView
         android:layout_width="wrap_content"
@@ -15,22 +15,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="加载超大图" />
-    
-      <Button
+
+    <Button
         android:id="@+id/btn_measure_once"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="自定义布局让onMeasure只计算一次" />
-      
-      <Button
+
+    <Button
         android:id="@+id/btn_flow_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="流式布局" />
-      <Button
+
+    <Button
         android:id="@+id/btn_aige_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="会动的圆" />
+
+    <Button
+        android:id="@+id/btn_aige_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="颜色变换" />
 
 </LinearLayout>

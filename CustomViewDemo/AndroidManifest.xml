@@ -31,6 +31,8 @@
         </activity>
         <activity android:name="com.jimmy.customviewdemo.ui.MovingCircleAty" >
         </activity>
+        <activity android:name="com.jimmy.customviewdemo.ui.ColorFilterAty" >
+        </activity>
     </application>
 
 </manifest>
