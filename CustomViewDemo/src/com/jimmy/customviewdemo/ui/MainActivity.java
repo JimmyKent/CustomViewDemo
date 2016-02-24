@@ -51,5 +51,13 @@ public class MainActivity extends Activity {
 				startActivity(intent);
 			}
 		});
+		
+		findViewById(R.id.btn_aige_2_2).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(MainActivity.this, AvoidXAty.class);
+				startActivity(intent);
+			}
+		});
 	}
 }
