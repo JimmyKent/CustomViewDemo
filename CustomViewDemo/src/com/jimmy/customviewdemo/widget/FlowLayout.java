@@ -69,11 +69,11 @@ public class FlowLayout extends ViewGroup {
 				measureHeight += lineHeight;
 			}
 		}
-		//Log.e("TAG", "exactlyWidth:" + exactlyWidth);
-		//Log.e("TAG", "exactlyHeight: " + exactlyHeight);
+		Log.e("TAG", "exactlyWidth:" + exactlyWidth + ",exactlyHeight: " + exactlyHeight);
 		setMeasuredDimension(//
-			widthMode == MeasureSpec.EXACTLY ? exactlyWidth : measureWidth + getPaddingLeft() + getPaddingRight(),//
-			heightMode == MeasureSpec.EXACTLY ? exactlyHeight : measureHeight + getPaddingTop() + getPaddingBottom()//
+				widthMode == MeasureSpec.EXACTLY ? exactlyWidth : measureWidth + getPaddingLeft() + getPaddingRight(),//
+				heightMode == MeasureSpec.EXACTLY ? exactlyHeight : measureHeight + getPaddingTop()
+						+ getPaddingBottom()//
 		);
 	}
 

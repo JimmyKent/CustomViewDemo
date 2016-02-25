@@ -51,11 +51,25 @@ public class MainActivity extends Activity {
 				startActivity(intent);
 			}
 		});
-		
+
 		findViewById(R.id.btn_aige_2_2).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(MainActivity.this, AvoidXAty.class);
+				startActivity(intent);
+			}
+		});
+		findViewById(R.id.btn_porterduff).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(MainActivity.this, PorterDuffAty.class);
+				startActivity(intent);
+			}
+		});
+		findViewById(R.id.btn_porterduff2).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(MainActivity.this, PorterDuffAty2.class);
 				startActivity(intent);
 			}
 		});

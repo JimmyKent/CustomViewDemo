@@ -44,5 +44,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="颜色变换" />
+    
+     <Button
+        android:id="@+id/btn_porterduff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PorterDuff" />
+     <Button
+        android:id="@+id/btn_porterduff2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PorterDuff2" />
 
 </LinearLayout>

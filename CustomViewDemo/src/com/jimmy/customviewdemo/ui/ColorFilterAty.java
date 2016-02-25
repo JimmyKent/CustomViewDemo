@@ -1,21 +1,20 @@
 package com.jimmy.customviewdemo.ui;
 
 import android.app.Activity;
-import android.graphics.AvoidXfermode;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jimmy.customviewdemo.R;
 import com.jimmy.customviewdemo.utils.BitmapUtils;
 import com.jimmy.customviewdemo.utils.PicUtils;
-import com.jimmy.customviewdemo.utils.ScreenUtils;
 import com.jimmy.customviewdemo.widget.FlowLayout;
+import com.jimmy.customviewdemo.widget.StarView;
 
 public class ColorFilterAty extends Activity {
 
@@ -38,7 +37,7 @@ public class ColorFilterAty extends Activity {
 		initData5();
 		initData6();
 		initData7();
-
+		initData8();
 	}
 
 	private void initData() {
@@ -135,4 +134,19 @@ public class ColorFilterAty extends Activity {
 		mImgFlowLayout.addView(view);
 	}
 
+	private void initData8() {
+		View view = LayoutInflater.from(this).inflate(R.layout.flowlayout_item_star_text, mImgFlowLayout, false);
+		TextView textView = (TextView) view.findViewById(R.id.textview);
+		StarView imgView = (StarView) view.findViewById(R.id.imageview);
+		imgView.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Log.d("ColorFilterAty", "StarView onClick");
+			}
+		});
+		textView.setText("一个图片的点击效果");
+		mImgFlowLayout.addView(view);
+	}
+	
 }

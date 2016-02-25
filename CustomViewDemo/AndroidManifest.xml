@@ -36,6 +36,10 @@
         </activity>
         <activity android:name="com.jimmy.customviewdemo.ui.AvoidXAty" >
         </activity>
+        <activity android:name="com.jimmy.customviewdemo.ui.PorterDuffAty" >
+        </activity>
+        <activity android:name="com.jimmy.customviewdemo.ui.PorterDuffAty2" >
+        </activity>
     </application>
 
 </manifest>
