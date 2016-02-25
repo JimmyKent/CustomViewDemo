@@ -13,7 +13,7 @@ public class MovingCircleAty extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.aty_moving_circle);
 		MovingCircleView circle = (MovingCircleView) findViewById(R.id.moving_circle);
-		new Thread(circle).start();
+		//new Thread(circle).start();
 
 	}
 

@@ -11,6 +11,7 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -80,7 +81,7 @@ public class EraserView extends View {
 		mPaint.setStyle(Paint.Style.STROKE);
 
 		// 设置路径结合处样式
-		mPaint.setStrokeJoin(Paint.Join.ROUND);
+		mPaint.setStrokeJoin(Paint.Join.MITER);
 
 		// 设置笔触类型
 		mPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -104,8 +105,20 @@ public class EraserView extends View {
 		bgBitmap = Bitmap.createScaledBitmap(bgBitmap, screenW, screenH, true);
 	}
 
+	
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		Log.d("EraserView", "onMeasure");
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+	}
+	@Override
+	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+		Log.d("EraserView", "onLayout");
+		super.onLayout(changed, left, top, right, bottom);
+	}
 	@Override
 	protected void onDraw(Canvas canvas) {
+		Log.d("EraserView", "onDraw");
 		// 绘制背景
 		canvas.drawBitmap(bgBitmap, 0, 0, null);
 
@@ -150,8 +163,8 @@ public class EraserView extends View {
 			}
 			break;
 		}
-
-		// 重绘视图
+		Log.d("EraserView", "invalidate");
+		// 重绘视图 只重新onDraw了， 没有进行onmeasure和onLayout
 		invalidate();
 		return true;
 	}

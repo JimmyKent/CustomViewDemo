@@ -73,5 +73,12 @@ public class MainActivity extends Activity {
 				startActivity(intent);
 			}
 		});
+		findViewById(R.id.btn_eraser).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(MainActivity.this, EraserAty.class);
+				startActivity(intent);
+			}
+		});
 	}
 }

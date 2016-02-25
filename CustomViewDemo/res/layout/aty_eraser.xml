@@ -4,8 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <com.jimmy.customviewdemo.widget3.ECGView2
-        android:id="@+id/avoid_view"
+    <com.jimmy.customviewdemo.widget.EraserView
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

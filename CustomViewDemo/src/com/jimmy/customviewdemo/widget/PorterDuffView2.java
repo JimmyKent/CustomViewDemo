@@ -105,11 +105,16 @@ public class PorterDuffView2 extends View {
 		porterDuffBO.setSize(RECT_SIZE_BIG);
 
 		// 先绘制dis目标图
-		canvas.drawBitmap(porterDuffBO.initDisBitmap(), rectX - 100, rectY - 100, mPaint);
+		mPaint.setColor(0xFF0DDBDB);
+		canvas.drawRect(rectX - 100, rectY - 100, rectX - 100 + RECT_SIZE_BIG, rectY - 100 + RECT_SIZE_BIG, mPaint);
+		//canvas.drawBitmap(porterDuffBO.initDisBitmap(), rectX - 100, rectY - 100, mPaint);
 		// 设置混合模式
 		mPaint.setXfermode(new PorterDuffXfermode(MODE));
 		// 再绘制src源图
-		canvas.drawBitmap(porterDuffBO.initSrcBitmap(), rectX + 100, rectY + 100, mPaint);
+		mPaint.setColor(0xFFF19C77);
+		canvas.drawRect(rectX + 100, rectY + 100, rectX + 100 + RECT_SIZE_BIG, rectY + 100 + RECT_SIZE_BIG, mPaint);
+		//等价的 
+		//canvas.drawBitmap(porterDuffBO.initSrcBitmap(), rectX + 100, rectY + 100, mPaint);
 		// 还原混合模式，如果不还原，上方的两个小正方形会消失
 		mPaint.setXfermode(null);
 

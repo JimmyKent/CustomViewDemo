@@ -40,6 +40,8 @@
         </activity>
         <activity android:name="com.jimmy.customviewdemo.ui.PorterDuffAty2" >
         </activity>
+        <activity android:name="com.jimmy.customviewdemo.ui.EraserAty" >
+        </activity>
     </application>
 
 </manifest>

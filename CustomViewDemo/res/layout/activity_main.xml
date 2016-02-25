@@ -39,21 +39,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="颜色变换" />
+
     <Button
         android:id="@+id/btn_aige_2_2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="颜色变换" />
-    
-     <Button
+        android:text="AvoidXAty" />
+
+    <Button
         android:id="@+id/btn_porterduff"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="PorterDuff" />
-     <Button
+
+    <Button
         android:id="@+id/btn_porterduff2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="PorterDuff2" />
+
+    <Button
+        android:id="@+id/btn_eraser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="橡皮泥效果" />
 
 </LinearLayout>

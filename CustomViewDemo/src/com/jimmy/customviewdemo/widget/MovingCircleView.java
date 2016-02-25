@@ -45,6 +45,21 @@ public class MovingCircleView extends View implements Runnable {
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 		canvas.drawCircle(ScreenUtils.getScreenWidth() / 2, ScreenUtils.getScreenHeight() / 2, mRadiu, mPaint);
+		try {//这是一个实现方式，不过会阻塞UI线程。
+			if (mRadiu <= 200) {
+				//如果半径小于200则自加否则大于200后重置半径值以实现往复
+				mRadiu += 10;
+				//刷新View  
+			} else {
+				mRadiu = 0;
+			}
+			invalidate();
+			//每执行一次暂停40毫秒
+			Thread.sleep(40);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	
 	}
 
 /*	public synchronized void setRadiu(int radiu) {
