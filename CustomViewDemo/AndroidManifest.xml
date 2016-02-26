@@ -42,6 +42,8 @@
         </activity>
         <activity android:name="com.jimmy.customviewdemo.ui.EraserAty" >
         </activity>
+        <activity android:name="com.jimmy.customviewdemo.ui.MultiCircleAty" >
+        </activity>
     </application>
 
 </manifest>

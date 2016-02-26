@@ -40,7 +40,7 @@ public class ECGView2 extends View {
 		mPaint.setStyle(Paint.Style.STROKE);
 		//该方法为我们绘制的图形添加一个阴影层效果：
 		//radius表示阴影的扩散半径，而dx和dy表示阴影平面上的偏移值，shadowColor就不说了阴影颜色，最后提醒一点setShadowLayer同样不支持HW哦
-		mPaint.setShadowLayer(7, 0, 0, Color.WHITE);
+		mPaint.setShadowLayer(70, 0, 0, Color.WHITE);
 
 		mPath = new Path();
 		transX = 0;
