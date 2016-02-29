@@ -37,6 +37,13 @@ public class MainActivity extends Activity {
 				startActivity(intent);
 			}
 		});
+		findViewById(R.id.btn_flow_view_recycleview).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(MainActivity.this, FlowViewRecycleAty.class);
+				startActivity(intent);
+			}
+		});
 		findViewById(R.id.btn_aige_1).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

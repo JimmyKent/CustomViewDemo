@@ -8,12 +8,12 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
-        <com.jimmy.customviewdemo.widget.FlowLayout
+        <com.jimmy.customviewdemo.widget.FlowLayout2
             android:id="@+id/flowlayout_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp" >
-        </com.jimmy.customviewdemo.widget.FlowLayout>
+        </com.jimmy.customviewdemo.widget.FlowLayout2>
 
         <com.jimmy.customviewdemo.widget.FlowLayout
             android:id="@+id/flowlayout_img"

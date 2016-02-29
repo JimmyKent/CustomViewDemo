@@ -29,6 +29,12 @@
         android:text="流式布局" />
 
     <Button
+        android:id="@+id/btn_flow_view_recycleview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="流式布局recycleview实现" />
+
+    <Button
         android:id="@+id/btn_aige_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -63,6 +69,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="橡皮泥效果" />
+
     <Button
         android:id="@+id/btn_multicircle"
         android:layout_width="wrap_content"

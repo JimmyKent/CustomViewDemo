@@ -30,6 +30,8 @@
         </activity>
         <activity android:name="com.jimmy.customviewdemo.ui.FlowViewAty" >
         </activity>
+        <activity android:name="com.jimmy.customviewdemo.ui.FlowViewRecycleAty" >
+        </activity>
         <activity android:name="com.jimmy.customviewdemo.ui.MovingCircleAty" >
         </activity>
         <activity android:name="com.jimmy.customviewdemo.ui.ColorFilterAty" >
