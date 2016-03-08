@@ -1,20 +1,22 @@
 package com.jimmy.customviewdemo.widget4;
 
+import com.jimmy.customviewdemo.listener.MulCircleClickListener;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.RectF;
+import android.graphics.Region;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 /**
  * 多重圈圈圈
- * 
- * @author Aige
- * @since 2014/11/25
  */
 public class MultiCircleView2 extends View {
 	private static final float STROKE_WIDTH = 1F / 256F, // 描边宽度占比
@@ -36,10 +38,23 @@ public class MultiCircleView2 extends View {
 	private float space;// 大圆小圆线段两端间隔
 	private float textOffsetY;// 文本的Y轴偏移值
 
+	private Region mCenterCircleRegion = new Region();
+
+
+	private MulCircleClickListener mClickListener;
+
+	public MultiCircleView2(Context context) {
+		this(context, null);
+	}
+
 	public MultiCircleView2(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		// 初始化画笔
 		initPaint(context);
+	}
+
+	public void setCircleClickListener(MulCircleClickListener listener) {
+		this.mClickListener = listener;
 	}
 
 	/**
@@ -128,208 +143,64 @@ public class MultiCircleView2 extends View {
 		// 绘制背景
 		canvas.drawColor(0xFFF29B76);
 		//画中心圆
+		drawCenterCircle(canvas);
+		//画左上角圆
+		drawLeftTopCircle(canvas);
+	}
+
+	private void drawCenterCircle(Canvas canvas) {
 		canvas.drawCircle(ccX, ccY, largeCricleRadiu, strokePaint);
+		canvas.drawText("Jimmy", ccX, ccY - textOffsetY, textPaint);
+		Path pathShortSize = new Path();
+		// 用来装载Path边界值的RectF对象  
+		RectF rectShortSize = new RectF();
 
+		// 添加圆形到Path
+		pathShortSize.addCircle(ccX, ccY, largeCricleRadiu, Path.Direction.CCW);
+		// 计算边界  
+		pathShortSize.computeBounds(rectShortSize, true);
+		// 将Path转化为Region  
+		mCenterCircleRegion.setPath(pathShortSize, new Region((int) rectShortSize.left, (int) rectShortSize.top,
+				(int) rectShortSize.right, (int) rectShortSize.bottom));
+	}
+
+	private void drawLeftTopCircle(Canvas canvas) {
+		// 锁定画布
 		canvas.save();
-
 		canvas.translate(ccX, ccY);//移动到圆心的地方
 		canvas.rotate(60);//绕左上角的（0，0位置旋转 ）
 		//(-largeCricleRadiu, 0)，这个点在坐标轴转了之后就是目标点
 		canvas.drawLine(-largeCricleRadiu, 0, -lineLength * 2, 0, strokePaint);
-
-		canvas.restore();
-
-		/*
-		// 绘制中心圆
-		canvas.drawCircle(ccX, ccY, largeCricleRadiu, strokePaint);
-		canvas.drawText("AigeStudio", ccX, ccY - textOffsetY, textPaint);
-
-		// 绘制左上方图形
-		drawTopLeft(canvas);
-
-		// 绘制右上方图形
-		drawTopRight(canvas);
-
-		// 绘制左下方图形
-		drawBottomLeft(canvas);
-
-		// 绘制下方图形
-		drawBottom(canvas);
-
-		// 绘制右下方图形
-		drawBottomRight(canvas);
-		*/
-	}
-
-	/**
-	 * 绘制左上方图形
-	 * 
-	 * @param canvas
-	 */
-	private void drawTopLeft(Canvas canvas) {
-		// 锁定画布
+		canvas.drawCircle(-3 * largeCricleRadiu, 0, largeCricleRadiu, strokePaint);
 		canvas.save();
-
-		// 平移和旋转画布
-		canvas.translate(ccX, ccY);
-		canvas.rotate(-30);
-
-		// 依次画：线-圈-线-圈
-		canvas.drawLine(0, -largeCricleRadiu, 0, -lineLength * 2, strokePaint);
-		canvas.drawCircle(0, -lineLength * 3, largeCricleRadiu, strokePaint);
-		canvas.drawText("Apple", 0, -lineLength * 3 - textOffsetY, textPaint);
-
-		canvas.drawLine(0, -largeCricleRadiu * 4, 0, -lineLength * 5, strokePaint);
-		canvas.drawCircle(0, -lineLength * 6, largeCricleRadiu, strokePaint);
-		canvas.drawText("Orange", 0, -lineLength * 6 - textOffsetY, textPaint);
-
-		// 释放画布
+		canvas.translate(0 - 3 * largeCricleRadiu, 0);
+		canvas.rotate(-60);
+		canvas.drawText("Apple", 0, -textOffsetY, textPaint);
+		canvas.restore();
 		canvas.restore();
 	}
 
-	/**
-	 * 绘制右上方图形
-	 * 
-	 * @param canvas
-	 */
-	private void drawTopRight(Canvas canvas) {
-		float cricleY = -lineLength * 3;
 
-		// 锁定画布
-		canvas.save();
+	
 
-		// 平移和旋转画布
-		canvas.translate(ccX, ccY);
-		canvas.rotate(30);
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		switch (event.getAction()) {
+		//http://blog.sina.com.cn/s/blog_62f189570101da3d.html 另一种思路，基于位置的思路
 
-		// 依次画：线-圈
-		canvas.drawLine(0, -largeCricleRadiu, 0, -lineLength * 2, strokePaint);
-		canvas.drawCircle(0, cricleY, largeCricleRadiu, strokePaint);
-		canvas.drawText("Tropical", 0, cricleY - textOffsetY, textPaint);
+			case MotionEvent.ACTION_DOWN:
+				if (mCenterCircleRegion.contains((int) event.getX(), (int) event.getY())) {
+					//如果中间的圆被点击了
+					Log.d("ACTION_DOWN", "ccX:" + ccX + ",ccY:" + //
+							",event.getX():" + event.getX() + ",event.getY():" + event.getY());
+					mClickListener.OnCenterClick();
+				}
+				break;
 
-		// 画弧形
-		drawTopRightArc(canvas, cricleY);
-
-		// 释放画布
-		canvas.restore();
-	}
-
-	/**
-	 * 绘制右上角画弧形
-	 * 
-	 * @param canvas
-	 * @param cricleY
-	 */
-	private void drawTopRightArc(Canvas canvas, float cricleY) {
-		canvas.save();
-
-		canvas.translate(0, cricleY);
-		canvas.rotate(-30);
-
-		float arcRadiu = size * ARC_RADIU;
-		RectF oval = new RectF(-arcRadiu, -arcRadiu, arcRadiu, arcRadiu);
-		arcPaint.setStyle(Paint.Style.FILL);
-		arcPaint.setColor(0x55EC6941);
-		canvas.drawArc(oval, -22.5F, -135, true, arcPaint);
-		arcPaint.setStyle(Paint.Style.STROKE);
-		arcPaint.setColor(Color.WHITE);
-		canvas.drawArc(oval, -22.5F, -135, false, arcPaint);
-
-		float arcTextRadiu = size * ARC_TEXT_RADIU;
-
-		canvas.save();
-		// 把画布旋转到扇形左端的方向
-		canvas.rotate(-135F / 2F);
-
-		/*
-		 * 每隔33.75度角画一次文本
-		 */
-		for (float i = 0; i < 5 * 33.75F; i += 33.75F) {
-			canvas.save();
-			canvas.rotate(i);
-
-			canvas.drawText("Aige", 0, -arcTextRadiu, textPaint);
-
-			canvas.restore();
+			default:
+				break;
 		}
 
-		canvas.restore();//XXX
-
-		canvas.restore();
-	}
-
-	/**
-	 * 绘制左下方图形
-	 * 
-	 * @param canvas
-	 */
-	private void drawBottomLeft(Canvas canvas) {
-		float lineYS = -largeCricleRadiu - space, lineYE = -lineLength * 2 - space, cricleY =
-				-lineLength * 2 - smallCricleRadiu - space * 2;
-
-		// 锁定画布
-		canvas.save();
-
-		// 平移和旋转画布
-		canvas.translate(ccX, ccY);
-		canvas.rotate(-100);
-
-		// 依次画：(间隔)线(间隔)-圈
-		canvas.drawLine(0, lineYS, 0, lineYE, strokePaint);
-		canvas.drawCircle(0, cricleY, smallCricleRadiu, strokePaint);
-		canvas.drawText("Banana", 0, cricleY - textOffsetY, textPaint);
-
-		// 释放画布
-		canvas.restore();
-	}
-
-	/**
-	 * 绘制下方图形
-	 * 
-	 * @param canvas
-	 */
-	private void drawBottom(Canvas canvas) {
-		float lineYS = -largeCricleRadiu - space, lineYE = -lineLength * 2 - space, cricleY =
-				-lineLength * 2 - smallCricleRadiu - space * 2;
-
-		// 锁定画布
-		canvas.save();
-
-		// 平移和旋转画布
-		canvas.translate(ccX, ccY);
-		canvas.rotate(180);
-
-		// 依次画：(间隔)线(间隔)-圈
-		canvas.drawLine(0, lineYS, 0, lineYE, strokePaint);
-		canvas.drawCircle(0, cricleY, smallCricleRadiu, strokePaint);
-		canvas.drawText("Cucumber", 0, 0, textPaint);
-
-		// 释放画布
-		canvas.restore();
-	}
-
-	/**
-	 * 绘制右下方图形
-	 * 
-	 * @param canvas
-	 */
-	private void drawBottomRight(Canvas canvas) {
-		float lineYS = -largeCricleRadiu - space, lineYE = -lineLength * 2 - space, cricleY =
-				-lineLength * 2 - smallCricleRadiu - space * 2;
-
-		// 锁定画布
-		canvas.save();
-
-		// 平移和旋转画布
-		canvas.translate(ccX, ccY);
-		canvas.rotate(100);
-
-		// 依次画：(间隔)线(间隔)-圈
-		canvas.drawLine(0, lineYS, 0, lineYE, strokePaint);
-		canvas.drawCircle(0, cricleY, smallCricleRadiu, strokePaint);
-		canvas.drawText("Vibrators", 0, cricleY - textOffsetY, textPaint);
-
-		// 释放画布
-		canvas.restore();
+		return super.onTouchEvent(event);
 	}
 }
