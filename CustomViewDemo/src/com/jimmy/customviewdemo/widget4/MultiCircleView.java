@@ -202,7 +202,6 @@ public class MultiCircleView extends View {
 
 	/**
 	 * 绘制右上角画弧形
-	 * 
 	 * @param canvas
 	 * @param cricleY
 	 */

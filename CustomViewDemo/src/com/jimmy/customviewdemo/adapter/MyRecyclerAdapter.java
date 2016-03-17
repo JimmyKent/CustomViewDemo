@@ -12,9 +12,6 @@ import android.widget.TextView;
 
 import com.jimmy.customviewdemo.R;
 
-/**
- * Created by 晓勇 on 2015/7/4 0004.
- */
 public class MyRecyclerAdapter extends RecyclerView.Adapter<MyViewHolder> {
 	private List<String> lists;
 	private Context context;

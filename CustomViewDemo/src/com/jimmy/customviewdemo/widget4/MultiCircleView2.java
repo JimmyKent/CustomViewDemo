@@ -1,7 +1,5 @@
 package com.jimmy.customviewdemo.widget4;
 
-import com.jimmy.customviewdemo.listener.MulCircleClickListener;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -14,6 +12,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.jimmy.customviewdemo.listener.MulCircleClickListener;
 
 /**
  * 多重圈圈圈
@@ -55,6 +55,13 @@ public class MultiCircleView2 extends View {
 
 	public void setCircleClickListener(MulCircleClickListener listener) {
 		this.mClickListener = listener;
+	}
+
+	private String mCenterText = "Jimmy";
+
+	public void setCenterText(String text) {
+		mCenterText = text;
+		invalidate();
 	}
 
 	/**
@@ -144,13 +151,15 @@ public class MultiCircleView2 extends View {
 		canvas.drawColor(0xFFF29B76);
 		//画中心圆
 		drawCenterCircle(canvas);
-		//画左上角圆
-		drawLeftTopCircle(canvas);
+		//画左上角
+		drawLeftTop(canvas);
+		//画右上角
+		drawRightTop(canvas);
 	}
 
 	private void drawCenterCircle(Canvas canvas) {
 		canvas.drawCircle(ccX, ccY, largeCricleRadiu, strokePaint);
-		canvas.drawText("Jimmy", ccX, ccY - textOffsetY, textPaint);
+		canvas.drawText(mCenterText, ccX, ccY - textOffsetY, textPaint);
 		Path pathShortSize = new Path();
 		// 用来装载Path边界值的RectF对象  
 		RectF rectShortSize = new RectF();
@@ -164,24 +173,55 @@ public class MultiCircleView2 extends View {
 				(int) rectShortSize.right, (int) rectShortSize.bottom));
 	}
 
-	private void drawLeftTopCircle(Canvas canvas) {
+	private void drawLeftTop(Canvas canvas) {
 		// 锁定画布
-		canvas.save();
+		canvas.save();//layer1
 		canvas.translate(ccX, ccY);//移动到圆心的地方
 		canvas.rotate(60);//绕左上角的（0，0位置旋转 ）
 		//(-largeCricleRadiu, 0)，这个点在坐标轴转了之后就是目标点
 		canvas.drawLine(-largeCricleRadiu, 0, -lineLength * 2, 0, strokePaint);
 		canvas.drawCircle(-3 * largeCricleRadiu, 0, largeCricleRadiu, strokePaint);
-		canvas.save();
-		canvas.translate(0 - 3 * largeCricleRadiu, 0);
+		canvas.drawLine(-4 * largeCricleRadiu, 0, -lineLength * 5, 0, strokePaint);
+		canvas.drawCircle(-6 * largeCricleRadiu, 0, largeCricleRadiu, strokePaint);
+		canvas.save();//layer2
+		canvas.translate(-3 * largeCricleRadiu, 0);
 		canvas.rotate(-60);
 		canvas.drawText("Apple", 0, -textOffsetY, textPaint);
-		canvas.restore();
+		canvas.restore();//恢复到上一个canvas的状态
+		canvas.translate(-6 * largeCricleRadiu, 0);
+		canvas.rotate(-60);
+		canvas.drawText("Pear", 0, -textOffsetY, textPaint);
 		canvas.restore();
 	}
 
+	private void drawRightTop(Canvas canvas) {
+		// 锁定画布
+		canvas.save();//layer1
+		canvas.translate(ccX, ccY);//移动到圆心的地方
+		canvas.rotate(-45);
+		canvas.drawLine(largeCricleRadiu, 0, 2 * largeCricleRadiu, 0, strokePaint);
+		canvas.drawCircle(3 * largeCricleRadiu, 0, largeCricleRadiu, strokePaint);
 
-	
+		drawRightTopArc(canvas);
+		canvas.restore();
+	}
+
+	private void drawRightTopArc(Canvas canvas) {
+		canvas.translate(3 * largeCricleRadiu, 0);
+		canvas.rotate(45);
+		float arcRadiu = size * ARC_RADIU;
+		//这4个参数是什么意思？ RectF这个长什么样？
+		RectF oval = new RectF(-arcRadiu, -arcRadiu, arcRadiu, arcRadiu);
+		arcPaint.setStyle(Paint.Style.FILL);
+		arcPaint.setColor(0x55EC6941);
+		canvas.drawArc(oval, -22.5F, -135, true, arcPaint);
+		arcPaint.setStyle(Paint.Style.STROKE);
+		arcPaint.setColor(Color.WHITE);
+		canvas.drawArc(oval, -22.5F, -135, false, arcPaint);
+		
+		
+	}
+
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
