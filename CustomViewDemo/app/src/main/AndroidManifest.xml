@@ -18,28 +18,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.jimmy.customviewdemo.ui.LargeImgAty" >
-        </activity>
-        <activity android:name="com.jimmy.customviewdemo.ui.MeasureOnceAty" >
-        </activity>
-        <activity android:name="com.jimmy.customviewdemo.ui.FlowViewAty" >
-        </activity>
-        <activity android:name="com.jimmy.customviewdemo.ui.FlowViewRecycleAty" >
-        </activity>
-        <activity android:name="com.jimmy.customviewdemo.ui.MovingCircleAty" >
-        </activity>
-        <activity android:name="com.jimmy.customviewdemo.ui.ColorFilterAty" >
-        </activity>
-        <activity android:name="com.jimmy.customviewdemo.ui.AvoidXAty" >
-        </activity>
-        <activity android:name="com.jimmy.customviewdemo.ui.PorterDuffAty" >
-        </activity>
-        <activity android:name="com.jimmy.customviewdemo.ui.PorterDuffAty2" >
-        </activity>
-        <activity android:name="com.jimmy.customviewdemo.ui.EraserAty" >
-        </activity>
-        <activity android:name="com.jimmy.customviewdemo.ui.MultiCircleAty" >
-        </activity>
+        <activity android:name=".ui.LargeImgAty" />
+        <activity android:name=".ui.MeasureOnceAty" />
+        <activity android:name=".ui.FlowViewAty" />
+        <activity android:name=".ui.FlowViewRecycleAty" />
+        <activity android:name=".ui.MovingCircleAty" />
+        <activity android:name=".ui.ColorFilterAty" />
+        <activity android:name=".ui.AvoidXAty" />
+        <activity android:name=".ui.PorterDuffAty" />
+        <activity android:name=".ui.PorterDuffAty2" />
+        <activity android:name=".ui.EraserAty" />
+        <activity android:name=".ui.MultiCircleAty" />
+        <activity android:name=".ui.TouchEventAty" />
+        <activity android:name=".ui.ViewLogAty" />
+        <activity android:name=".mvp.MvpAty" />
+        <activity android:name=".ui.GifAty" />
+        <activity android:name=".ui.movie_seat.MovieSelectSeatActivity1" />
+        <activity android:name=".ui.movie_seat.MovieSeatAty"></activity>
     </application>
 
 </manifest>

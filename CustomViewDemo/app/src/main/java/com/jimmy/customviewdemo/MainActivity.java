@@ -10,17 +10,10 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.jimmy.customviewdemo.ui.AvoidXAty;
-import com.jimmy.customviewdemo.ui.ColorFilterAty;
-import com.jimmy.customviewdemo.ui.EraserAty;
-import com.jimmy.customviewdemo.ui.FlowViewAty;
-import com.jimmy.customviewdemo.ui.FlowViewRecycleAty;
-import com.jimmy.customviewdemo.ui.LargeImgAty;
-import com.jimmy.customviewdemo.ui.MeasureOnceAty;
-import com.jimmy.customviewdemo.ui.MovingCircleAty;
-import com.jimmy.customviewdemo.ui.MultiCircleAty;
-import com.jimmy.customviewdemo.ui.PorterDuffAty;
-import com.jimmy.customviewdemo.ui.PorterDuffAty2;
+import com.jimmy.customviewdemo.mvp.MvpAty;
+import com.jimmy.customviewdemo.ui.*;
+import com.jimmy.customviewdemo.ui.movie_seat.MovieSeatAty;
+import com.jimmy.customviewdemo.ui.movie_seat.MovieSelectSeatActivity1;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -117,6 +110,46 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, MultiCircleAty.class);
+                startActivity(intent);
+            }
+        });
+
+        findViewById(R.id.btn_touch_event).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, TouchEventAty.class);
+                startActivity(intent);
+            }
+        });
+
+        findViewById(R.id.btn_view_log).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ViewLogAty.class);
+                startActivity(intent);
+            }
+        });
+
+        findViewById(R.id.btn_mvp).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MvpAty.class);
+                startActivity(intent);
+            }
+        });
+
+        findViewById(R.id.btn_gif).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, GifAty.class);
+                startActivity(intent);
+            }
+        });
+        findViewById(R.id.btn_movie_seat).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //MovieSelectSeatActivity1
+                Intent intent = new Intent(MainActivity.this, MovieSeatAty.class);
                 startActivity(intent);
             }
         });

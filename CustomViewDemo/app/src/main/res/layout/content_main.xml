@@ -82,6 +82,45 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="多圆圈" />
+
+    <Button
+        android:id="@+id/btn_touch_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="点击事件传递" />
+
+    <Button
+        android:id="@+id/btn_view_log"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="view的绘制顺序" />
+
+    <Button
+        android:id="@+id/btn_mvp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="mvp" />
+
+    <Button
+        android:id="@+id/btn_gif"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="gif" />
+    <Button
+        android:id="@+id/btn_binder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="binder" />
+    <Button
+        android:id="@+id/btn_merge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="merge" />
+    <Button
+        android:id="@+id/btn_movie_seat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="电影院座位" />
 </LinearLayout>
 
 </ScrollView>
