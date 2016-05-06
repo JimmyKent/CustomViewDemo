@@ -21,7 +21,7 @@ import com.jimmy.customviewdemo.R;
 /**
  *
  * @Description:影院座位表类
- * 
+ *
  */
 @SuppressLint("DrawAllocation")
 public class SeatView extends ImageView {
@@ -172,8 +172,7 @@ public class SeatView extends ImageView {
 	private Bitmap drawSeat() {
 		int newBoxSize = Math.round(originalBoxSize * currScale);
 		int newSeatSize = Math.round(originalSeatSize * currScale);
-		int seatBitmapWidth = (int) (newBoxSize * column);
-		Bitmap seatBitmap = Bitmap.createBitmap(seatBitmapWidth, (int) (newBoxSize * row), Config.ARGB_8888);
+		Bitmap seatBitmap = Bitmap.createBitmap((int) (newBoxSize * column), (int) (newBoxSize * row), Config.ARGB_8888);
 		Canvas canvas = new Canvas(seatBitmap);
 		// 已选
 		Bitmap seatSelected = Bitmap.createScaledBitmap(normalSeatSelected, newSeatSize, newSeatSize, true);
@@ -337,8 +336,6 @@ public class SeatView extends ImageView {
 
 	/**
 	 * 获取影院座位表实际宽度(该宽度会随着放大缩小变化)
-	 * 
-	 * @return
 	 */
 	private int getRealWidth() {
 		return Math.round(originalBoxSize * currScale) * column;
@@ -346,8 +343,6 @@ public class SeatView extends ImageView {
 
 	/**
 	 * 获取影院座位表实际高度(该高度会随着放大缩小变化)
-	 * 
-	 * @return
 	 */
 	private int getRealHeight() {
 		return Math.round(originalBoxSize * currScale) * row;
@@ -355,7 +350,7 @@ public class SeatView extends ImageView {
 
 	/**
 	 * 两点距离
-	 * 
+	 *
 	 * @param event
 	 * @return
 	 */
@@ -376,7 +371,7 @@ public class SeatView extends ImageView {
 
 	/**
 	 * 根据坐标获取座位位置
-	 * 
+	 *
 	 * @param event
 	 * @return
 	 */

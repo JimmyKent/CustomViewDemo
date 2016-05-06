@@ -43,8 +43,8 @@ public class MovieSeatAty extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.aty_movie_seat);
         initData();
-        MoviewSeatView moviewSeatView = (MoviewSeatView) findViewById(R.id.btn_movie_seat);
-        moviewSeatView.setData(mData);
+        MovieSeatView movieSeatView = (MovieSeatView) findViewById(R.id.btn_movie_seat);
+        movieSeatView.setData(mData);
     }
 
     private void initData() {

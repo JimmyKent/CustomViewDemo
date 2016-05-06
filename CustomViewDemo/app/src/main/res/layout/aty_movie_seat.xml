@@ -9,7 +9,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.jimmy.customviewdemo.ui.movie_seat.MovieSeatAty">
 
-    <com.jimmy.customviewdemo.ui.movie_seat.MoviewSeatView
+    <com.jimmy.customviewdemo.ui.movie_seat.MovieSeatView
         android:id="@+id/btn_movie_seat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
