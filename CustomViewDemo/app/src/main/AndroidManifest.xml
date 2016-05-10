@@ -34,7 +34,8 @@
         <activity android:name=".mvp.MvpAty" />
         <activity android:name=".ui.GifAty" />
         <activity android:name=".ui.movie_seat.MovieSelectSeatActivity1" />
-        <activity android:name=".ui.movie_seat.MovieSeatAty"></activity>
+        <activity android:name=".ui.movie_seat.MovieSeatAty" />
+        <activity android:name=".ui.lockview.LockAty"></activity>
     </application>
 
 </manifest>
