@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
@@ -21,15 +22,38 @@ public class LockView extends View {
     private static final int DEFAULT_CELL_WIDTH = LOCK_VIEW_WIDTH / 7;
     private static final int DEFAULT_CELL_STROKE_WIDTH = DEFAULT_CELL_WIDTH / 30;
 
+    private int NORMAL_INNER_COLOR = 0XEE898989;// 内圆颜色
+    private int NORMAL_OUTER_COLOR = 0XEED9D9D9;// 外圆颜色
+
+    private int SELECTED_INNER_COLOR = 0XEE33FF11;// 选中时内圆颜色
+    private int SELECTED_OUTER_COLOR = 0XCCFFCC12;// 选中时外圆颜色
+
+    private int ERROR_INNER_COLOR = 0XFFEA0945;// 密码错误时内圆颜色
+    private int ERROR_OUTER_COLOR = 0XFF901032;// 密码错误时外圆颜色
+
+    private Paint mArrowPaint;
+
+    private Paint mLinePaint;
+    private Paint mNormalPaint;
+    private Paint mSelectedPaint;
+    private Paint mErrorPaint;
+
+
+    private int lineColor = this.SELECTED_INNER_COLOR;// 选中时线条颜色
+    private int arrowColor = this.SELECTED_INNER_COLOR;// 选中时箭头颜色
+
+    private int errorArrowColor = this.ERROR_INNER_COLOR;// 密码错误时箭头颜色
+    private int errorlineColor = this.ERROR_INNER_COLOR;// 密码错误时线条颜色
+
     private CellBean[] mCells = new CellBean[9];
+    private volatile boolean mIsInit = false;
 
     private int mCellWidth;
     private int mCellRadius;
-    private int mCellStrokeWidth;
+    private int mLineWidth;
     private int mSpace;
 
-    private Paint mNormalPaint;
-    private Paint mSelectedPaint;
+
     private int mWidth;
     private int mHeight;
 
@@ -46,26 +70,50 @@ public class LockView extends View {
 
     public LockView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
+
     }
 
+    /*public void setPointNum(int number){
+        mCells = new CellBean[number];
+    }*/
+
+
     private void init() {
-        mCellWidth = DensityUtils.dp2px(getContext(), DEFAULT_CELL_WIDTH);
+        if (mCells == null) {
+            return;
+        }
+        Log.e("LockView", "mWidth:" + mWidth);
+        Log.e("LockView", "mHeight:" + mHeight);
+        //点的宽度
+        mCellWidth = (mWidth == 0 ? DEFAULT_CELL_WIDTH : mWidth / 5);
+        //点的半径
         mCellRadius = mCellWidth >> 1;
-        mCellStrokeWidth = DensityUtils.dp2px(getContext(), DEFAULT_CELL_STROKE_WIDTH);
-        mSpace = DensityUtils.dp2px(getContext(), DEFAULT_CELL_WIDTH / 2);
+        //线条的宽度
+        mLineWidth = (mWidth == 0 ? DEFAULT_CELL_STROKE_WIDTH : mCellWidth / 5
+        );
+        //点与点之间的空隙
+        mSpace = mCellRadius;
+
         //初始化画笔
+        mLinePaint = new Paint();
+        mLinePaint.setColor(this.lineColor);
+        mLinePaint.setStyle(Paint.Style.STROKE);
+        mLinePaint.setAntiAlias(true);
+        mLinePaint.setStrokeWidth(mCellRadius / 8);
+
         mNormalPaint = new Paint();
-        mNormalPaint.setColor(Color.WHITE);
-        mNormalPaint.setStrokeWidth(mCellStrokeWidth);
+        mNormalPaint.setColor(NORMAL_INNER_COLOR);
+        mNormalPaint.setStrokeWidth(mLineWidth);
         mNormalPaint.setStyle(Paint.Style.STROKE);
         mNormalPaint.setAntiAlias(true);
         //初始化被选中的画笔
         mSelectedPaint = new Paint();
         mSelectedPaint.setColor(Color.CYAN);
-        mSelectedPaint.setStrokeWidth(mCellStrokeWidth);
+        mSelectedPaint.setStrokeWidth(mLineWidth);
         mSelectedPaint.setStyle(Paint.Style.STROKE);
         mSelectedPaint.setAntiAlias(true);
+
+        mErrorPaint = mSelectedPaint;
 
         CellBean cell;
         float x;
@@ -77,11 +125,14 @@ public class LockView extends View {
             cell = new CellBean(x, y);
             mCells[i] = cell;
         }
+
+        mIsInit = true;
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         //TODO  设置标志位，如果给了精确值，根据精确值重新分配 DEFAULT_CELL_WIDTH等值
+
         mWidth = getRealSize(widthMeasureSpec);
         mHeight = getRealSize(heightMeasureSpec);
         setMeasuredDimension(mWidth, mHeight);
@@ -100,6 +151,9 @@ public class LockView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        if (!mIsInit) {
+            init();
+        }
         drawCell(canvas);
         drawLine(canvas);
     }
@@ -124,13 +178,13 @@ public class LockView extends View {
         if (mSelectedCells.size() > 1) {
             for (int i = 1; i < mSelectedCells.size(); i++) {//从1开始
                 nextCell = mCells[mSelectedCells.get(i)];
-                canvas.drawLine(cell.getCenterX(), cell.getCenterY(), nextCell.getCenterX(), nextCell.getCenterY(), mSelectedPaint);
+                canvas.drawLine(cell.getCenterX(), cell.getCenterY(), nextCell.getCenterX(), nextCell.getCenterY(), mLinePaint);
                 cell = nextCell;
             }
-        }
 
+        }
         if (!mFinish) {
-            canvas.drawLine(cell.getCenterX(), cell.getCenterY(), mCurrentX, mCurrentY, mSelectedPaint);
+            canvas.drawLine(cell.getCenterX(), cell.getCenterY(), mCurrentX, mCurrentY, mLinePaint);
         }
     }
 
@@ -155,6 +209,7 @@ public class LockView extends View {
                 Toast.makeText(getContext(), mSelectedCells.toString(), Toast.LENGTH_SHORT).show();
                 break;
             case MotionEvent.ACTION_MOVE:
+                mFinish = false;
                 handleMoveEvent(event);
                 break;
         }
@@ -163,13 +218,13 @@ public class LockView extends View {
 
     private void handleDownEvent(MotionEvent event) {
         int index = findCellIndex(event.getX(), event.getY());
-        if (index == -1) {
+        if (index != -1) {
             mCells[index].setSelected(true);
             mSelectedCells.add((Integer) index);
         }
-        invalidate();
         mCurrentX = event.getX();
         mCurrentY = event.getY();
+        invalidate();
     }
 
     private void handleMoveEvent(MotionEvent event) {
@@ -177,10 +232,10 @@ public class LockView extends View {
         if (index != -1) {
             mCells[index].setSelected(true);
             mSelectedCells.add((Integer) index);
-            invalidate();
         }
         mCurrentX = event.getX();
         mCurrentY = event.getY();
+        invalidate();
     }
 
     private int findCellIndex(float x, float y) {
