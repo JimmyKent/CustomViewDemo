@@ -10,9 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
-import com.jimmy.customviewdemo.utils.DensityUtils;
-
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -61,7 +59,9 @@ public class LockView extends View {
     private float mCurrentY;
     private boolean mFinish = false;
 
-    private List<Integer> mSelectedCells = new ArrayList<Integer>();
+    private List<Integer> mSelectedCells = new LinkedList<Integer>();
+
+    private int mPreIndex = -1, mCurIndex = -1;
 
 
     public LockView(Context context) {
@@ -72,7 +72,7 @@ public class LockView extends View {
         super(context, attrs);
 
     }
-
+    //TODO
     /*public void setPointNum(int number){
         mCells = new CellBean[number];
     }*/
@@ -89,8 +89,7 @@ public class LockView extends View {
         //点的半径
         mCellRadius = mCellWidth >> 1;
         //线条的宽度
-        mLineWidth = (mWidth == 0 ? DEFAULT_CELL_STROKE_WIDTH : mCellWidth / 5
-        );
+        mLineWidth = (mWidth == 0 ? DEFAULT_CELL_STROKE_WIDTH : mCellWidth / 5);
         //点与点之间的空隙
         mSpace = mCellRadius;
 
@@ -131,7 +130,7 @@ public class LockView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        //TODO  设置标志位，如果给了精确值，根据精确值重新分配 DEFAULT_CELL_WIDTH等值
+        //设置标志位，如果给了精确值，根据精确值重新分配 DEFAULT_CELL_WIDTH等值
 
         mWidth = getRealSize(widthMeasureSpec);
         mHeight = getRealSize(heightMeasureSpec);
@@ -142,6 +141,7 @@ public class LockView extends View {
         int mode = MeasureSpec.getMode(measureSpec);
         int size = MeasureSpec.getSize(measureSpec);
         if (mode == MeasureSpec.AT_MOST || mode == MeasureSpec.UNSPECIFIED) {
+            //TODO 这里好像有问题
             return mCellWidth * 3 + mSpace * 4;
         } else {
             return size;
@@ -209,6 +209,7 @@ public class LockView extends View {
                 Toast.makeText(getContext(), mSelectedCells.toString(), Toast.LENGTH_SHORT).show();
                 break;
             case MotionEvent.ACTION_MOVE:
+                //TODO 这里可以控制重绘次数，比如在位置在cellbean的范围内才重绘
                 mFinish = false;
                 handleMoveEvent(event);
                 break;
@@ -218,6 +219,10 @@ public class LockView extends View {
 
     private void handleDownEvent(MotionEvent event) {
         int index = findCellIndex(event.getX(), event.getY());
+        //TODO 这里如果起始不是点，应该也要可以才行
+        if (index == -1) {
+            return;
+        }
         if (index != -1) {
             mCells[index].setSelected(true);
             mSelectedCells.add((Integer) index);
@@ -228,14 +233,89 @@ public class LockView extends View {
     }
 
     private void handleMoveEvent(MotionEvent event) {
-        int index = findCellIndex(event.getX(), event.getY());
-        if (index != -1) {
-            mCells[index].setSelected(true);
-            mSelectedCells.add((Integer) index);
-        }
         mCurrentX = event.getX();
         mCurrentY = event.getY();
+        int index = findCellIndex(mCurrentX, mCurrentY);
+        //TODO 这里如果出现1，3等情况
+        if (index != -1) {
+            mPreIndex = mCurIndex;
+            mCurIndex = index;
+            if (mPreIndex == -1) {//第一个点
+                mCells[index].setSelected(true);
+                mSelectedCells.add((Integer) index);
+            } else {
+                switch (10 * mPreIndex + mCurIndex) {
+                    case 2:
+                    case 6:
+                    case 8:
+                    case 17:
+                    case 20:
+                    case 26:
+                    case 28:
+                    case 35:
+                    case 53:
+                    case 60:
+                    case 62:
+                    case 68:
+                    case 71:
+                    case 80:
+                    case 82:
+                    case 86:
+                        setCrossCellBean();
+                        break;
+                    default:
+                        mCells[index].setSelected(true);
+                        mSelectedCells.add((Integer) index);
+                        break;
+                }
+                //TODO 两个变量是否可以改switch语句
+                /*if (mPreIndex == 0 && mCurIndex == 2) {
+                    setCrossCellBean();
+                } else if (mPreIndex == 0 && mCurIndex == 6) {
+                    setCrossCellBean();
+                } else if (mPreIndex == 0 && mCurIndex == 8) {
+                    setCrossCellBean();
+                } else if (mPreIndex == 1 && mCurIndex == 7) {
+                    setCrossCellBean();
+                } else if (mPreIndex == 2 && mCurIndex == 0) {
+                    setCrossCellBean();
+                } else if (mPreIndex == 2 && mCurIndex == 6) {
+                    setCrossCellBean();
+                } else if (mPreIndex == 2 && mCurIndex == 8) {
+                    setCrossCellBean();
+                } else if (mPreIndex == 3 && mCurIndex == 5) {
+                    setCrossCellBean();
+                } else if (mPreIndex == 5 && mCurIndex == 3) {
+                    setCrossCellBean();
+                } else if (mPreIndex == 6 && mCurIndex == 0) {
+                    setCrossCellBean();
+                } else if (mPreIndex == 6 && mCurIndex == 2) {
+                    setCrossCellBean();
+                } else if (mPreIndex == 6 && mCurIndex == 8) {
+                    setCrossCellBean();
+                } else if (mPreIndex == 7 && mCurIndex == 1) {
+                    setCrossCellBean();
+                } else if (mPreIndex == 8 && mCurIndex == 0) {
+                    setCrossCellBean();
+                } else if (mPreIndex == 8 && mCurIndex == 2) {
+                    setCrossCellBean();
+                } else if (mPreIndex == 8 && mCurIndex == 6) {
+                    setCrossCellBean();
+                } else {
+                    mCells[index].setSelected(true);
+                    mSelectedCells.add((Integer) index);
+                }*/
+            }
+        }
         invalidate();
+    }
+
+    private void setCrossCellBean() {
+        mCells[(mPreIndex + mCurIndex) / 2].setSelected(true);
+        mCells[mCurIndex].setSelected(true);
+        mSelectedCells.add((Integer) (mPreIndex + mCurIndex) / 2);
+        mSelectedCells.add((Integer) mCurIndex);
+        mPreIndex = (mPreIndex + mCurIndex) / 2;
     }
 
     private int findCellIndex(float x, float y) {
