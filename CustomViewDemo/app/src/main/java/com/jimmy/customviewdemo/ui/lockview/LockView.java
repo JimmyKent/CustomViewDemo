@@ -78,7 +78,7 @@ public class LockView extends View {
     }*/
 
 
-    private void init() {
+    private void init() {//mIsInit是内存共享，所以这里不用加锁
         if (mCells == null) {
             return;
         }
@@ -194,10 +194,10 @@ public class LockView extends View {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 if (mFinish) {//清空所有信息，重来
+                    mFinish = false;
                     for (CellBean cell : mCells) {
                         cell.setSelected(false);
                     }
-                    mFinish = false;
                     mSelectedCells.clear();
                     invalidate();
                     return false;
@@ -224,6 +224,7 @@ public class LockView extends View {
             return;
         }
         if (index != -1) {
+            mCurIndex = index;
             mCells[index].setSelected(true);
             mSelectedCells.add((Integer) index);
         }
