@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -24,8 +25,7 @@ import java.util.TimerTask;
  * @author iWilliam<br>
  *         email:iwilliam@yeah.net
  */
-public class LockPattern extends View
-{
+public class LockPattern extends View {
     private int side = 3;// 设置每个边有几个点，默认3*3九宫格
     private long CLEAR_TIME = 1000;
     private Paint arrowPaint;
@@ -65,23 +65,20 @@ public class LockPattern extends View
     private float viewHeight;
     private float viewWidth;
 
-    public LockPattern(Context context)
-    {
+    public LockPattern(Context context) {
         super(context);
     }
 
-    public LockPattern(Context context, AttributeSet attributeSet)
-    {
+    public LockPattern(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         initAttrs(attributeSet);
     }
-    public LockPattern(Context paramContext, AttributeSet attributeSet, int paramInt)
-    {
+
+    public LockPattern(Context paramContext, AttributeSet attributeSet, int paramInt) {
         super(paramContext, attributeSet, paramInt);
     }
 
-    private void initAttrs(AttributeSet attributeSet)
-    {
+    private void initAttrs(AttributeSet attributeSet) {
         String namespace = "http://schemas.android.com/apk/res/com.iwilliam.lockpattern";
 
         int password_min_length = attributeSet.getAttributeIntValue(namespace, "password_min_length", 1);
@@ -97,9 +94,9 @@ public class LockPattern extends View
             this.innerColor = getColor(inner_color);
 
         int outer_color = attributeSet.getAttributeResourceValue(namespace, "outer_color", -1);
-        if (outer_color != -1)
+        if (outer_color != -1) {
             this.outerColor = getColor(outer_color);
-
+        }
         int selected_inner_color = attributeSet.getAttributeResourceValue(namespace, "selected_inner_color", -1);
         if (selected_inner_color != -1)
             this.selectedInnerColor = getColor(selected_inner_color);
@@ -136,14 +133,12 @@ public class LockPattern extends View
         this.hasDrawArrow = draw_arrow;
     }
 
-    private int getColor(int resColorId)
-    {
+    private int getColor(int resColorId) {
         return getResources().getColor(resColorId);
     }
-
+//TODO
     @Override
-    public boolean onTouchEvent(MotionEvent event)
-    {
+    public boolean onTouchEvent(MotionEvent event) {
         if (!touchEnable)
             return false;
 
@@ -152,11 +147,9 @@ public class LockPattern extends View
         float ex = event.getX();
         float ey = event.getY();
         Point p = null;
-        switch (event.getAction())
-        {
-            case MotionEvent.ACTION_DOWN :
-                if (task != null)
-                {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                if (task != null) {
                     task.cancel();
                     task = null;
                 }
@@ -165,49 +158,41 @@ public class LockPattern extends View
                 if (p != null)
                     isChecking = true;
                 break;
-            case MotionEvent.ACTION_MOVE :
-                if (isChecking)
-                {
+            case MotionEvent.ACTION_MOVE:
+                if (isChecking) {
                     p = isInRound(ex, ey);
-                    if (p == null)
-                    {
+                    if (p == null) {
                         movingNoPoint = true;
                         moveingX = ex;
                         moveingY = ey;
                     }
                 }
                 break;
-            case MotionEvent.ACTION_UP :
+            case MotionEvent.ACTION_UP:
                 p = isInRound(ex, ey);
                 isChecking = false;
                 break;
         }
-        if (isChecking && p != null)
-        {
-            if (isNewPoint(p))
-            {
+        if (isChecking && p != null) {
+            if (isNewPoint(p)) {
                 p.state = Point.STATE_CHECK;
                 selectedPoints.add(p);
-            } else
-            {
+            } else {
                 movingNoPoint = true;
                 moveingX = ex;
                 moveingY = ey;
             }
         }
 
-        if (!isChecking && mCompleteListener != null)
-        {
+        if (!isChecking && mCompleteListener != null) {
             if (selectedPoints.isEmpty())
                 return true;
 
             this.touchEnable = false;
-            if (selectedPoints.size() < pwdMinLen || selectedPoints.size() > pwdMaxLen)
-            {
+            if (selectedPoints.size() < pwdMinLen || selectedPoints.size() > pwdMaxLen) {
                 mCompleteListener.onPwdShortOrLong(selectedPoints.size());
                 passwordError();
-            } else
-            {
+            } else {
                 mCompleteListener.onComplete(getPassword());
                 clearPassword(CLEAR_TIME);
             }
@@ -217,27 +202,23 @@ public class LockPattern extends View
     }
 
     /**
-     *密码数字以英文逗号分隔，直接使用加密工具加密即可
+     * 密码数字以英文逗号分隔，直接使用加密工具加密即可
      */
-    private String getPassword()
-    {
+    private String getPassword() {
         StringBuilder pwd = new StringBuilder();
         for (Point p : selectedPoints)
             pwd.append(",").append(p.value);
         return pwd.deleteCharAt(0).toString();
     }
 
-    private boolean isNewPoint(Point p)
-    {
+    private boolean isNewPoint(Point p) {
         if (selectedPoints.contains(p))
             return false;
         return true;
     }
 
-    private Point isInRound(float x, float y)
-    {
-        for (int i = 0; i < mPoints.length; i++)
-        {
+    private Point isInRound(float x, float y) {
+        for (int i = 0; i < mPoints.length; i++) {
             for (int j = 0; j < mPoints[i].length; j++)
                 if (MathUtils.isInRound(mPoints[i][j].x, mPoints[i][j].y, outerRadius, x, y))
                     return mPoints[i][j];
@@ -245,8 +226,7 @@ public class LockPattern extends View
         return null;
     }
 
-    private void drawArrow(Canvas canvas, Paint paint, Point start, Point end, float arrowHeight)
-    {
+    private void drawArrow(Canvas canvas, Paint paint, Point start, Point end, float arrowHeight) {
         double d = MathUtils.distance(start.x, start.y, end.x, end.y);
         float cosB = (float) ((end.x - start.x) / d);
         float sinB = (float) ((end.y - start.y) / d);
@@ -271,8 +251,7 @@ public class LockPattern extends View
         canvas.drawPath(path, paint);
     }
 
-    private void drawLine(Point start, Point end, Canvas canvas, Paint paint)
-    {
+    private void drawLine(Point start, Point end, Canvas canvas, Paint paint) {
         double d = MathUtils.distance(start.x, start.y, end.x, end.y);
         float cosA = (float) ((end.x - start.x) / d);
         float sinA = (float) ((end.y - start.y) / d);
@@ -280,34 +259,30 @@ public class LockPattern extends View
         float ry = sinA * innerRadius;
         canvas.drawLine(rx + start.x, ry + start.y, end.x - rx, end.y - ry, paint);
     }
-
-    private void drawLockPattern(Canvas canvas)
-    {
+    //TODO
+    private void drawLockPattern(Canvas canvas) {
         boolean isError = false;
-        for (int i = 0; i < mPoints.length; i++)
-        {
-            for (int j = 0; j < mPoints[i].length; j++)
-            {
+        for (int i = 0; i < mPoints.length; i++) {
+            for (int j = 0; j < mPoints[i].length; j++) {
                 Point p = mPoints[i][j];
                 int tempOuterColor = 0;
                 int tempInnerColor = 0;
                 Paint temP = null;
-                switch (p.state)
-                {
-                    case Point.STATE_CHECK :
+                switch (p.state) {
+                    case Point.STATE_CHECK:
                         tempOuterColor = selectedOuterColor;
                         tempInnerColor = selectedInnerColor;
                         temP = selectedPaint;
                         break;
 
-                    case Point.STATE_CHECK_ERROR :
+                    case Point.STATE_CHECK_ERROR:
                         isError = true;
                         tempOuterColor = errorOuterColor;
                         tempInnerColor = errorInnerColor;
                         temP = errorPaint;
                         break;
 
-                    case Point.STATE_NORMAL :
+                    case Point.STATE_NORMAL:
                         tempOuterColor = outerColor;
                         tempInnerColor = innerColor;
                         temP = normalPaint;
@@ -320,21 +295,17 @@ public class LockPattern extends View
             }
         }
 
-        if (isError)
-        {
+        if (isError) {
             arrowPaint.setColor(errorArrowColor);
             linePaint.setColor(errorlineColor);
-        } else
-        {
+        } else {
             arrowPaint.setColor(arrowColor);
             linePaint.setColor(lineColor);
         }
 
-        if (selectedPoints.size() > 0)
-        {
+        if (selectedPoints.size() > 0) {
             Point tp = selectedPoints.get(0);
-            for (int i = 1; i < selectedPoints.size(); i++)
-            {
+            for (int i = 1; i < selectedPoints.size(); i++) {
                 Point p = selectedPoints.get(i);
                 drawLine(tp, p, canvas, linePaint);
                 if (hasDrawArrow)
@@ -346,20 +317,17 @@ public class LockPattern extends View
         }
     }
 
-    private void init()
-    {
+    private void init() {
         viewWidth = getWidth();
         viewHeight = getHeight();
         float offsetX = 0;
         float offsetY = 0;
         // 强烈建议AndroidManifest.xml中对应的Activity加入
         // android:screenOrientation="portrait"强制竖屏
-        if (viewWidth > viewHeight)
-        {// 防止横屏
+        if (viewWidth > viewHeight) {// 防止横屏
             offsetX = (viewWidth - viewHeight) / 2;
             viewWidth = viewHeight;
-        } else
-        {// 竖屏
+        } else {// 竖屏
             offsetY = (viewHeight - viewWidth) / 2;
             viewHeight = viewWidth;
         }
@@ -368,11 +336,9 @@ public class LockPattern extends View
         float spacing = viewWidth / avgCount;
 
         int value = 0;
-        for (int i = 0; i < mPoints.length; i++)
-        {
+        for (int i = 0; i < mPoints.length; i++) {
             float y = offsetY + (3 * i + 2) * spacing;
-            for (int j = 0; j < mPoints[i].length; j++)
-            {
+            for (int j = 0; j < mPoints[i].length; j++) {
                 float x = offsetX + (3 * j + 2) * spacing;
                 mPoints[i][j] = new Point(x, y, value++);
             }
@@ -387,8 +353,7 @@ public class LockPattern extends View
     /**
      * 初始化画笔
      */
-    private void initPaints()
-    {
+    private void initPaints() {
         this.arrowPaint = new Paint();
         this.arrowPaint.setColor(this.arrowColor);
         this.arrowPaint.setStyle(Paint.Style.FILL);
@@ -421,17 +386,16 @@ public class LockPattern extends View
      *
      * @return
      */
-    public LockPattern hideLocus()
-    {
+    public LockPattern hideLocus() {
         this.arrowColor = R.color.transparent;
         this.lineColor = R.color.transparent;
         this.selectedInnerColor = this.innerColor;
         this.selectedOuterColor = this.outerColor;
         return this;
     }
+
     @Override
-    protected void onDraw(Canvas canvas)
-    {
+    protected void onDraw(Canvas canvas) {
         if (!(this.isInitialized))
             init();
         drawLockPattern(canvas);
@@ -443,37 +407,31 @@ public class LockPattern extends View
     /**
      * 密码错误时调用，显示错误轨迹，1秒后清屏
      */
-    public void passwordError()
-    {
+    public void passwordError() {
         for (Point p : selectedPoints)
             p.state = Point.STATE_CHECK_ERROR;
         clearPassword(CLEAR_TIME);
     }
 
-    private void clearPassword(final long time)
-    {
-        if (time > 1)
-        {
+    private void clearPassword(final long time) {
+        if (time > 1) {
             if (task != null)
                 task.cancel();
 
             postInvalidate();
-            timer.schedule(new TimerTask()
-            {
-                public void run()
-                {
+            timer.schedule(new TimerTask() {
+                public void run() {
                     reset();
                     postInvalidate();
                 }
             }, time);
-        } else
-        {
+        } else {
             reset();
             postInvalidate();
         }
     }
-    private void reset()
-    {
+
+    private void reset() {
         for (Point p : selectedPoints)
             p.state = Point2.STATE_NORMAL;
         selectedPoints.clear();
@@ -482,19 +440,18 @@ public class LockPattern extends View
 
     private OnCompleteListener mCompleteListener;
 
-    public void setOnCompleteListener(OnCompleteListener mCompleteListener)
-    {
+    public void setOnCompleteListener(OnCompleteListener mCompleteListener) {
         this.mCompleteListener = mCompleteListener;
     }
 
-    public interface OnCompleteListener
-    {
+    public interface OnCompleteListener {
         /**
          * 当密码滑屏完毕
          *
          * @param password
          */
         public void onComplete(String password);
+
         /**
          * 当密码太短或太长时调用
          *
@@ -509,23 +466,19 @@ public class LockPattern extends View
  *
  * @author iWilliam<br>
  *         email:iwilliam@yeah.net
- *
  */
-class MathUtils
-{
+class MathUtils {
     /**
      * 点(x2,y2)是否在以(x1,y1)为圆心，r为半径的圆内
      */
-    public static boolean isInRound(double x1, double y1, double r, double x2, double y2)
-    {
+    public static boolean isInRound(double x1, double y1, double r, double x2, double y2) {
         return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) < r * r;
     }
 
     /**
      * 两点间距
      */
-    public static double distance(double x1, double y1, double x2, double y2)
-    {
+    public static double distance(double x1, double y1, double x2, double y2) {
         return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     }
 }
@@ -536,10 +489,8 @@ class MathUtils
  *
  * @author iWilliam<br>
  *         email:iwilliam@yeah.net
- *
  */
-class Point
-{
+class Point {
     public static final int STATE_NORMAL = 0; // 默认未选中
     public static final int STATE_CHECK = 1; // 选中
     public static final int STATE_CHECK_ERROR = 2;// 选中密码错误或密码太短，太长
@@ -561,12 +512,10 @@ class Point
      */
     public int value;
 
-    public Point()
-    {
+    public Point() {
     }
 
-    public Point(float x, float y, int value)
-    {
+    public Point(float x, float y, int value) {
         this.x = x;
         this.y = y;
         this.value = value;

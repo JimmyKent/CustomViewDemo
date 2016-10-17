@@ -1,38 +1,57 @@
 package com.jimmy.customviewdemo;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Toast;
 
+import com.jimmy.customviewdemo.andpermission.AndPermissionAty;
 import com.jimmy.customviewdemo.mvp.MvpAty;
-import com.jimmy.customviewdemo.ui.*;
+import com.jimmy.customviewdemo.screenswitch.ScreenSwitchAty;
+import com.jimmy.customviewdemo.ui.AidlAty;
+import com.jimmy.customviewdemo.ui.AvoidXAty;
+import com.jimmy.customviewdemo.ui.ColorFilterAty;
+import com.jimmy.customviewdemo.ui.ConstraintLayoutAty;
+import com.jimmy.customviewdemo.ui.EraserAty;
+import com.jimmy.customviewdemo.ui.FlowViewAty;
+import com.jimmy.customviewdemo.ui.FlowViewRecycleAty;
+import com.jimmy.customviewdemo.ui.GifAty;
+import com.jimmy.customviewdemo.ui.LargeImgAty;
+import com.jimmy.customviewdemo.ui.MeasureOnceAty;
+import com.jimmy.customviewdemo.ui.MovingCircleAty;
+import com.jimmy.customviewdemo.ui.MultiCircleAty;
+import com.jimmy.customviewdemo.ui.PorterDuffAty;
+import com.jimmy.customviewdemo.ui.PorterDuffAty2;
+import com.jimmy.customviewdemo.ui.TextAty;
+import com.jimmy.customviewdemo.ui.TouchEventAty;
+import com.jimmy.customviewdemo.ui.ViewLogAty;
 import com.jimmy.customviewdemo.ui.lockview.LockAty;
+import com.jimmy.log.KLog;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+        String abiStr = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            StringBuffer sb = new StringBuffer();
+            for (String abi : Build.SUPPORTED_ABIS) {
+                sb.append(abi + ",");
             }
-        });
-
+            abiStr = "CPU_ABI:" + Build.CPU_ABI + ",CPU_ABI2:" + Build.CPU_ABI2 + ",SUPPORTED_ABIS:" +sb;
+        }
+        Toast.makeText(this, abiStr, Toast.LENGTH_SHORT).show();
+        KLog.e("jimmy", abiStr);
         findViewById(R.id.btn_large_img).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                log();
                 Intent intent = new Intent(MainActivity.this, LargeImgAty.class);
                 startActivity(intent);
             }
@@ -43,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, MeasureOnceAty.class);
                 startActivity(intent);
+
+                overridePendingTransition(R.anim.flip_vertical_in,
+                        R.anim.flip_vertical_out);
+
             }
         });
 
@@ -150,7 +173,57 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        findViewById(R.id.btn_anim_view).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ConstraintLayoutAty.class);
+                startActivity(intent);
+            }
+        });
+        findViewById(R.id.btn_aidl).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AidlAty.class);
+                startActivity(intent);
+            }
+        });
+        findViewById(R.id.btn_text).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, TextAty.class);
+                startActivity(intent);
+            }
+        });
+        findViewById(R.id.btn_permission).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AndPermissionAty.class);
+                startActivity(intent);
+            }
+        });
+        findViewById(R.id.btn_screen_switch).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ScreenSwitchAty.class);
+                startActivity(intent);
+            }
+        });
+
 
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        KLog.e("jimmy","MainAty onConfigurationChanged");
+    }
+
+    private void log() {
+        KLog.v();
+        KLog.d();
+        KLog.i();
+        KLog.w();
+        KLog.e();
+        KLog.a();
+    }
 }

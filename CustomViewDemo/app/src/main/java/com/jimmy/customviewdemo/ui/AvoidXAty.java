@@ -12,8 +12,7 @@ public class AvoidXAty extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.aty_avoidx);
 		findViewById(R.id.avoid_view);
-		
-		
+
 	}
 	
 	

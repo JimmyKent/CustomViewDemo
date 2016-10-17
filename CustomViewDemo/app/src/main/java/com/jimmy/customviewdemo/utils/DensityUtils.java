@@ -19,6 +19,16 @@ public class DensityUtils {
         return (int) dpValue;
     }
 
+    public static float dip2px(float dpValue) {
+        Context context = App.getInstance().getApplicationContext();
+        if (null != context && context.getResources() != null && context.getResources().getDisplayMetrics() != null) {
+            final float scale = context.getResources().getDisplayMetrics().density;
+            return (int) (dpValue * scale + 0.5f);
+        }
+
+        return dpValue;
+    }
+
     public static int dp2px(Context context, float dpValue) {
         if (null != context && context.getResources() != null && context.getResources().getDisplayMetrics() != null) {
             final float scale = context.getResources().getDisplayMetrics().density;

@@ -1,1 +1,1 @@
-include ':app',':librarys:GifView'
+include ':app', ':librarys:GifView', ':ModuleTest', ':OKHttp', ':Volley', ':LogModule', ':test', ':Permission'
