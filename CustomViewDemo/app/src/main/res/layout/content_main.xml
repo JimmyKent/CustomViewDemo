@@ -157,6 +157,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="横竖屏切换" />
+        <Button
+            android:id="@+id/btn_retrofit_aty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="retrofit" />
+        <Button
+            android:id="@+id/btn_alert_dialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="alert_dialog点击不消失" />
+        <Button
+            android:id="@+id/btn_rx"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RxJava" />
+        <Button
+            android:id="@+id/btn_parallax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Parallax" />
 
     </LinearLayout>
 

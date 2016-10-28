@@ -49,7 +49,7 @@ public class MovingCircleView extends View implements Runnable {
 			if (mRadiu <= 200) {
 				//如果半径小于200则自加否则大于200后重置半径值以实现往复
 				mRadiu += 10;
-				//刷新View  
+				//刷新View
 			} else {
 				mRadiu = 0;
 			}

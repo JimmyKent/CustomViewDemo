@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:id="@+id/parent_root"
+    android:layout_width="@dimen/big_window_width"
+    android:layout_height="@dimen/big_window_height"
+    android:background="@android:color/holo_blue_light"
     android:orientation="vertical">
 
     <TextView
@@ -19,5 +21,5 @@
         android:id="@+id/ll_parent_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"/>
+        android:orientation="vertical" />
 </LinearLayout>

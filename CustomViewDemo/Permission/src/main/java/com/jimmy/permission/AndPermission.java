@@ -19,8 +19,6 @@ import java.util.List;
  * http://blog.csdn.net/yanzhenjie1003/article/details/52503533
  * https://blog.coding.net/blog/understanding-marshmallow-runtime-permission
  * http://www.jianshu.com/p/2746a627c6d2
- *
- *
  */
 
 public class AndPermission {
@@ -69,7 +67,7 @@ public class AndPermission {
         try {
             for (Method method : methods) {
                 if (!method.isAccessible()) method.setAccessible(true);
-                method.invoke(o, null);
+                method.invoke(o, new Class[0]);
             }
         } catch (Exception e) {
             Log.e("AndPermission", "Callback methods fail.");

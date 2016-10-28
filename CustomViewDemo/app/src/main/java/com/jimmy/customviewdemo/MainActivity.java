@@ -1,6 +1,7 @@
 package com.jimmy.customviewdemo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -10,6 +11,9 @@ import android.widget.Toast;
 
 import com.jimmy.customviewdemo.andpermission.AndPermissionAty;
 import com.jimmy.customviewdemo.mvp.MvpAty;
+import com.jimmy.customviewdemo.parallax.ParallaxActivity;
+import com.jimmy.customviewdemo.retrofit.RetrofitActivity;
+import com.jimmy.customviewdemo.rx.RxActivity;
 import com.jimmy.customviewdemo.screenswitch.ScreenSwitchAty;
 import com.jimmy.customviewdemo.ui.AidlAty;
 import com.jimmy.customviewdemo.ui.AvoidXAty;
@@ -44,7 +48,7 @@ public class MainActivity extends Activity {
             for (String abi : Build.SUPPORTED_ABIS) {
                 sb.append(abi + ",");
             }
-            abiStr = "CPU_ABI:" + Build.CPU_ABI + ",CPU_ABI2:" + Build.CPU_ABI2 + ",SUPPORTED_ABIS:" +sb;
+            abiStr = "CPU_ABI:" + Build.CPU_ABI + ",CPU_ABI2:" + Build.CPU_ABI2 + ",SUPPORTED_ABIS:" + sb;
         }
         Toast.makeText(this, abiStr, Toast.LENGTH_SHORT).show();
         KLog.e("jimmy", abiStr);
@@ -208,14 +212,63 @@ public class MainActivity extends Activity {
                 startActivity(intent);
             }
         });
-
-
+        findViewById(R.id.btn_screen_switch).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ScreenSwitchAty.class);
+                startActivity(intent);
+            }
+        });
+        findViewById(R.id.btn_retrofit_aty).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, RetrofitActivity.class);
+                startActivity(intent);
+            }
+        });
+        findViewById(R.id.btn_alert_dialog).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // http://blog.csdn.net/books1958/article/details/41448205
+                // 不会消失，打开的页面出现：
+                // 打开新的Activity，activity会打开在alertDialog的上面
+                // 打开Fragment，如果是一个层次，比如打开Fragment，fragment会显示在AlertDialog下面。
+                //AlertDialog的WindowType在Activity上面，alertDialog不消失，
+                final AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Dialog不消失测试")
+                        .setMessage("点击按钮打开Activity")
+                        .setPositiveButton("打开", null).create();
+                alertDialog.show();
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(MainActivity.this, AndPermissionAty.class);
+                        startActivity(intent);
+                        //alertDialog.dismiss();
+                    }
+                });
+            }
+        });
+        findViewById(R.id.btn_rx).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, RxActivity.class);
+                startActivity(intent);
+            }
+        });
+        findViewById(R.id.btn_parallax).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ParallaxActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        KLog.e("jimmy","MainAty onConfigurationChanged");
+        KLog.e("jimmy", "MainAty onConfigurationChanged");
     }
 
     private void log() {

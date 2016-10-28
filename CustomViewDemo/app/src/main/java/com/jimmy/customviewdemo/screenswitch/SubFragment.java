@@ -26,7 +26,7 @@ public class SubFragment extends Fragment implements View.OnClickListener {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_sub, container, false);
+        return inflater.inflate(R.layout.fragment_sub_screen_switch, container, false);
     }
 
     @Override
@@ -80,4 +80,6 @@ public class SubFragment extends Fragment implements View.OnClickListener {
     private void getLocationNo() {
         Toast.makeText(getActivity(), "申请定位权限失败", Toast.LENGTH_SHORT).show();
     }
+
+
 }

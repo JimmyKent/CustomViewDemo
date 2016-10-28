@@ -156,7 +156,7 @@ public class FlowLayout2 extends ViewGroup {
 							/ 2;//左右所以除以2
 					child.setPadding(child.getPaddingLeft() + addPadding, child.getPaddingTop(),
 							child.getPaddingRight() + addPadding, child.getPaddingBottom());
-					//设置了padding之后要重新测量一下，不然会出现flowlayout _error.jpg的情况
+					//设置了padding之后要重新测量一下，不然会出现flowlayout_error.jpg的情况
 					measureChild(child, mWidthMeasureSpec, mHeightMeasureSpec);
 				}
 				MarginLayoutParams lp = (MarginLayoutParams) child.getLayoutParams();

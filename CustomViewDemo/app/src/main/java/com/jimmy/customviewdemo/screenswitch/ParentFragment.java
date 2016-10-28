@@ -1,6 +1,7 @@
 package com.jimmy.customviewdemo.screenswitch;
 
 import android.Manifest;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,6 +11,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.jimmy.customviewdemo.R;
@@ -25,6 +27,13 @@ public class ParentFragment extends Fragment {
 
     private static final String TAG = "jimmy ParentFragment";
     private static final int REQUEST_CALENDAR = 101;
+    private View mRootView;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);//在最外层设置，内层不能设置
+    }
 
     @Nullable
     @Override
@@ -34,7 +43,8 @@ public class ParentFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        // view.findViewById(R.id.ll_parent_content);
+        mRootView =  view.findViewById(R.id.parent_root);
+
         getFragmentManager().beginTransaction().add(R.id.ll_parent_content, new SubFragment(), "SubFragment").commit();
 
         final int sub = R.id.ll_parent_content;
@@ -48,7 +58,6 @@ public class ParentFragment extends Fragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        requestCameraPermission();
 
                     }
                 }
@@ -56,44 +65,15 @@ public class ParentFragment extends Fragment {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        //super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        KLog.e("jimmy","ParentFragment onRequestPermissionsResult");
-        doNext(requestCode, permissions, grantResults);
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
 
-        //这里使用相同的requestCode是可以穿透的
-        /*List<Fragment> fragments = getChildFragmentManager().getFragments();
-        if (fragments != null) {
-            for (Fragment fragment : fragments) {
-                if (fragment != null) {
-                    fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
-                }
-            }
-        }*/
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mRootView.getLayoutParams();
+        lp.width  = (int) getResources().getDimension(R.dimen.big_window_width);
+        lp.height  = (int) getResources().getDimension(R.dimen.big_window_height);
     }
 
-    private void doNext(int requestCode, String[] permissions, int[] grantResults) {
-        AndPermission.onRequestPermissionsResult(this, requestCode, permissions, grantResults, new IPermissionCallback() {
-            @Override
-            public void onSucceed(int requestCode) {
-                if (requestCode == REQUEST_CALENDAR)
-                    Toast.makeText(getActivity(), "申请日历权限成功", Toast.LENGTH_SHORT).show();
-            }
 
-            @Override
-            public void onFailed(int requestCode, String... denyPermissions) {
-                if (requestCode == REQUEST_CALENDAR)
-                    Toast.makeText(getActivity(), "申请日历权限失败", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void requestCameraPermission() {
-        AndPermission.with(this)
-                .requestCode(REQUEST_CALENDAR)
-                .permission(Manifest.permission.READ_CALENDAR)
-                .send();
-    }
 
 
 }
