@@ -44,4 +44,5 @@ CoordinatorLayout功能如此强大，而他的神奇之处在于Behavior对象�
 2
 3
 如下面的例子，实现了点击FloatingActionButton点击旋转90度，并适配Snackbar。</string>
+    <string name="title_activity_scrolling">ScrollingActivity</string>
 </resources>

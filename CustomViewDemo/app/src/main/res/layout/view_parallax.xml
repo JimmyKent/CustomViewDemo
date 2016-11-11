@@ -3,17 +3,28 @@
     android:id="@+id/view_root"
     android:layout_width="match_parent"
     android:layout_height="300dp"
-    android:orientation="vertical"
-    android:background="@android:color/holo_green_light">
+    android:background="@android:color/holo_green_light"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/tv_balance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="￥300"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="51dp"
-        android:textSize="30sp"/>
+        android:textSize="30sp" />
+
+    <Button
+        android:id="@+id/btn_charge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="充值" />
+
+    <TextView
+        android:id="@+id/tv_record"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/darker_gray"
+        android:text="消费记录" />
 
 </RelativeLayout>

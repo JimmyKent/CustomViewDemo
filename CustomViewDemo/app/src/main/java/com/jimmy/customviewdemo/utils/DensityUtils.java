@@ -51,4 +51,13 @@ public class DensityUtils {
         return (int) pxValue;
     }
 
+    public static int getDensity() {
+        Context context = App.getInstance().getApplicationContext();
+        if (null != context && context.getResources() != null && context.getResources().getDisplayMetrics() != null) {
+            final float scale = context.getResources().getDisplayMetrics().density;
+            return (int) scale;
+        }
+        return 0;
+    }
+
 }

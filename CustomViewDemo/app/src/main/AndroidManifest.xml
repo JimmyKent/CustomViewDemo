@@ -85,7 +85,16 @@
             android:screenOrientation="sensor" />
         <activity android:name=".retrofit.RetrofitActivity" />
         <activity android:name=".rx.RxActivity" />
-        <activity android:name=".parallax.ParallaxActivity"></activity>
+        <activity
+            android:name=".parallax.ParallaxActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="sensor" />
+        <activity
+            android:name=".parallax.ScrollingActivity"
+            android:label="@string/title_activity_scrolling"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".recyclerview.RecyclerActivity" />
+        <activity android:name=".mzrecycler.MzRecyclerActivity"></activity>
     </application>
 
 </manifest>

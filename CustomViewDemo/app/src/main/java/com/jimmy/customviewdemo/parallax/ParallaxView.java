@@ -196,7 +196,4 @@ public class ParallaxView extends RelativeLayout {
         return MAX_HEIGHT - mOffset;
     }
 
-    /*public static interface OffsetChangeListener{
-        void offsetChange(int offset);
-    }*/
 }

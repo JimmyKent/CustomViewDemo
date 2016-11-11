@@ -6,7 +6,7 @@
 
 三、gradle
 
-
+四、把gradle下载的库arr复制出来放到libs里面，避免不能XX的时候不可以编译工程
 
 
 //DOING
@@ -17,4 +17,8 @@ Permission：
   // XXX 如果ParentFragment 和SubFragment 使用了相同的code
 4.完成readme issues
 5.sample
+
+Plugin：
+
+
 

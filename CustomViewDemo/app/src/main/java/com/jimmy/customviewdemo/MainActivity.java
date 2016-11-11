@@ -7,11 +7,15 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jimmy.customviewdemo.andpermission.AndPermissionAty;
 import com.jimmy.customviewdemo.mvp.MvpAty;
+import com.jimmy.customviewdemo.mzrecycler.MzRecyclerActivity;
 import com.jimmy.customviewdemo.parallax.ParallaxActivity;
+import com.jimmy.customviewdemo.parallax.ScrollingActivity;
+import com.jimmy.customviewdemo.recyclerview.RecyclerActivity;
 import com.jimmy.customviewdemo.retrofit.RetrofitActivity;
 import com.jimmy.customviewdemo.rx.RxActivity;
 import com.jimmy.customviewdemo.screenswitch.ScreenSwitchAty;
@@ -52,6 +56,10 @@ public class MainActivity extends Activity {
         }
         Toast.makeText(this, abiStr, Toast.LENGTH_SHORT).show();
         KLog.e("jimmy", abiStr);
+
+        TextView phoneInfoTV = (TextView) findViewById(R.id.tv_phone_info);
+        phoneInfoTV.setText("version:" + Build.VERSION.SDK_INT);
+
         findViewById(R.id.btn_large_img).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -260,6 +268,20 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ParallaxActivity.class);
+                startActivity(intent);
+            }
+        });
+        findViewById(R.id.btn_system_parallax).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ScrollingActivity.class);
+                startActivity(intent);
+            }
+        });
+        findViewById(R.id.btn_recycler).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MzRecyclerActivity.class);
                 startActivity(intent);
             }
         });
