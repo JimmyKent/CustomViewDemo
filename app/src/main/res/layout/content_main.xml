@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.jimmy.customviewdemo.MainActivity"
+    tools:showIn="@layout/activity_main">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_phone_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btn_large_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="加载超大图" />
+
+        <Button
+            android:id="@+id/btn_measure_once"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="自定义布局让onMeasure只计算一次" />
+
+        <Button
+            android:id="@+id/btn_flow_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="流式布局" />
+
+        <Button
+            android:id="@+id/btn_flow_view_recycleview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="流式布局recycleview实现" />
+
+        <Button
+            android:id="@+id/btn_aige_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="会动的圆" />
+
+        <Button
+            android:id="@+id/btn_aige_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="颜色变换" />
+
+        <Button
+            android:id="@+id/btn_aige_2_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AvoidXAty" />
+
+        <Button
+            android:id="@+id/btn_porterduff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PorterDuff" />
+
+        <Button
+            android:id="@+id/btn_porterduff2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PorterDuff2" />
+
+        <Button
+            android:id="@+id/btn_eraser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="橡皮泥效果" />
+
+        <Button
+            android:id="@+id/btn_multicircle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="多圆圈" />
+
+        <Button
+            android:id="@+id/btn_touch_event"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="点击事件传递" />
+
+        <Button
+            android:id="@+id/btn_view_log"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="view的绘制顺序" />
+
+        <Button
+            android:id="@+id/btn_mvp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="mvp" />
+
+        <Button
+            android:id="@+id/btn_gif"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="gif" />
+
+        <Button
+            android:id="@+id/btn_binder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="binder" />
+
+        <Button
+            android:id="@+id/btn_merge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="merge" />
+
+        <Button
+            android:id="@+id/btn_movie_seat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="电影院座位" />
+
+        <Button
+            android:id="@+id/btn_lock_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="九宫格锁" />
+
+        <Button
+            android:id="@+id/btn_anim_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="动画测试" />
+
+        <Button
+            android:id="@+id/btn_aidl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="aidl" />
+
+        <Button
+            android:id="@+id/btn_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="text" />
+
+        <Button
+            android:id="@+id/btn_permission"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="运行时权限" />
+        <Button
+            android:id="@+id/btn_screen_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="横竖屏切换" />
+        <Button
+            android:id="@+id/btn_retrofit_aty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="retrofit" />
+        <Button
+            android:id="@+id/btn_alert_dialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="alert_dialog点击不消失" />
+        <Button
+            android:id="@+id/btn_rx"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RxJava" />
+        <Button
+            android:id="@+id/btn_parallax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Parallax" />
+        <Button
+            android:id="@+id/btn_system_parallax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SystemParallax" />
+        <Button
+            android:id="@+id/btn_recycler"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RecyclerActivity" />
+
+    </LinearLayout>
+
+</ScrollView>

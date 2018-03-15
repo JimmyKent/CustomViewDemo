@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "/Users/jinguochong/AndroidStudioProjects/CustomViewDemo/Permission/build/intermediates/res/merged/debug/layout-v11/notification_template_big_media.xml",
+        "source": "/Users/jinguochong/.android/build-cache/e731d04845a4ac55a110aa88b9ee5326967b5fdb/output/res/layout-v11/notification_template_big_media.xml"
+    },
+    {
+        "merged": "/Users/jinguochong/AndroidStudioProjects/CustomViewDemo/Permission/build/intermediates/res/merged/debug/layout-v11/notification_template_big_media_custom.xml",
+        "source": "/Users/jinguochong/.android/build-cache/e731d04845a4ac55a110aa88b9ee5326967b5fdb/output/res/layout-v11/notification_template_big_media_custom.xml"
+    },
+    {
+        "merged": "/Users/jinguochong/AndroidStudioProjects/CustomViewDemo/Permission/build/intermediates/res/merged/debug/layout-v11/notification_template_big_media_narrow.xml",
+        "source": "/Users/jinguochong/.android/build-cache/e731d04845a4ac55a110aa88b9ee5326967b5fdb/output/res/layout-v11/notification_template_big_media_narrow.xml"
+    },
+    {
+        "merged": "/Users/jinguochong/AndroidStudioProjects/CustomViewDemo/Permission/build/intermediates/res/merged/debug/layout-v11/notification_template_big_media_narrow_custom.xml",
+        "source": "/Users/jinguochong/.android/build-cache/e731d04845a4ac55a110aa88b9ee5326967b5fdb/output/res/layout-v11/notification_template_big_media_narrow_custom.xml"
+    },
+    {
+        "merged": "/Users/jinguochong/AndroidStudioProjects/CustomViewDemo/Permission/build/intermediates/res/merged/debug/layout-v11/notification_media_action.xml",
+        "source": "/Users/jinguochong/.android/build-cache/e731d04845a4ac55a110aa88b9ee5326967b5fdb/output/res/layout-v11/notification_media_action.xml"
+    },
+    {
+        "merged": "/Users/jinguochong/AndroidStudioProjects/CustomViewDemo/Permission/build/intermediates/res/merged/debug/layout-v11/notification_media_cancel_action.xml",
+        "source": "/Users/jinguochong/.android/build-cache/e731d04845a4ac55a110aa88b9ee5326967b5fdb/output/res/layout-v11/notification_media_cancel_action.xml"
+    }
+]

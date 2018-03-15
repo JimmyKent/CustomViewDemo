@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "/Users/jinguochong/AndroidStudioProjects/CustomViewDemo/Permission/build/intermediates/res/merged/release/layout-v21/notification_template_icon_group.xml",
+        "source": "/Users/jinguochong/.android/build-cache/e731d04845a4ac55a110aa88b9ee5326967b5fdb/output/res/layout-v21/notification_template_icon_group.xml"
+    },
+    {
+        "merged": "/Users/jinguochong/AndroidStudioProjects/CustomViewDemo/Permission/build/intermediates/res/merged/release/layout-v21/notification_action_tombstone.xml",
+        "source": "/Users/jinguochong/.android/build-cache/e731d04845a4ac55a110aa88b9ee5326967b5fdb/output/res/layout-v21/notification_action_tombstone.xml"
+    },
+    {
+        "merged": "/Users/jinguochong/AndroidStudioProjects/CustomViewDemo/Permission/build/intermediates/res/merged/release/layout-v21/notification_template_custom_big.xml",
+        "source": "/Users/jinguochong/.android/build-cache/e731d04845a4ac55a110aa88b9ee5326967b5fdb/output/res/layout-v21/notification_template_custom_big.xml"
+    },
+    {
+        "merged": "/Users/jinguochong/AndroidStudioProjects/CustomViewDemo/Permission/build/intermediates/res/merged/release/layout-v21/notification_action.xml",
+        "source": "/Users/jinguochong/.android/build-cache/e731d04845a4ac55a110aa88b9ee5326967b5fdb/output/res/layout-v21/notification_action.xml"
+    }
+]
