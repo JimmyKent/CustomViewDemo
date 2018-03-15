@@ -1,1 +1,0 @@
-include ':app', ':librarys:GifView', ':ModuleTest', ':OKHttp', ':Volley', ':librarys:LogModule', ':test', ':Permission', ':PluginDemo', ':PluginSDK', ':Plugin', ':PluginService'
