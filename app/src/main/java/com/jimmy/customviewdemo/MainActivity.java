@@ -18,6 +18,7 @@ import com.jimmy.customviewdemo.recyclerview.RecyclerActivity;
 import com.jimmy.customviewdemo.retrofit.RetrofitActivity;
 import com.jimmy.customviewdemo.rx.RxActivity;
 import com.jimmy.customviewdemo.screenswitch.ScreenSwitchAty;
+import com.jimmy.customviewdemo.spinner_plus.SpinnerActivity;
 import com.jimmy.customviewdemo.ui.AidlAty;
 import com.jimmy.customviewdemo.ui.AvoidXAty;
 import com.jimmy.customviewdemo.ui.ColorFilterAty;
@@ -274,6 +275,13 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ScrollingActivity.class);
+                startActivity(intent);
+            }
+        });
+        findViewById(R.id.btn_spinner_plus).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SpinnerActivity.class);
                 startActivity(intent);
             }
         });

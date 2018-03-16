@@ -9,4 +9,7 @@
     <dimen name="big_window_height">600dp</dimen>
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+
+    <dimen name="small_window_width">324dp</dimen>
+    <dimen name="height_item_multi_account">64dp</dimen>
 </resources>
