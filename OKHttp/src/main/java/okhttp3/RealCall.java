@@ -16,290 +16,199 @@
 package okhttp3;
 
 import java.io.IOException;
-import java.net.HttpRetryException;
-import java.net.ProtocolException;
-import okhttp3.internal.NamedRunnable;
-import okhttp3.internal.Platform;
-import okhttp3.internal.http.HttpEngine;
-import okhttp3.internal.http.RouteException;
-import okhttp3.internal.http.StreamAllocation;
-import okhttp3.internal.http.UnrepeatableRequestBody;
+import java.util.ArrayList;
+import java.util.List;
 
-import static okhttp3.internal.Platform.INFO;
-import static okhttp3.internal.http.HttpEngine.MAX_FOLLOW_UPS;
+import okhttp3.internal.NamedRunnable;
+import okhttp3.internal.cache.CacheInterceptor;
+import okhttp3.internal.connection.ConnectInterceptor;
+import okhttp3.internal.connection.StreamAllocation;
+import okhttp3.internal.http.BridgeInterceptor;
+import okhttp3.internal.http.CallServerInterceptor;
+import okhttp3.internal.http.RealInterceptorChain;
+import okhttp3.internal.http.RetryAndFollowUpInterceptor;
+import okhttp3.internal.platform.Platform;
+
+import static okhttp3.internal.platform.Platform.INFO;
 
 final class RealCall implements Call {
-  private final OkHttpClient client;
+    final OkHttpClient client;
+    final RetryAndFollowUpInterceptor retryAndFollowUpInterceptor;
 
-  // Guarded by this.
-  private boolean executed;
-  volatile boolean canceled;
-  private boolean forWebSocket;
+    /**
+     * There is a cycle between the {@link Call} and {@link EventListener} that makes this awkward.
+     * This will be set after we create the call instance then create the event listener instance.
+     */
+    private EventListener eventListener;
 
-  /** The application's original request unadulterated by redirects or auth headers. */
-  Request originalRequest;
-  HttpEngine engine;
+    /**
+     * The application's original request unadulterated by redirects or auth headers.
+     */
+    final Request originalRequest;
+    final boolean forWebSocket;
 
-  protected RealCall(OkHttpClient client, Request originalRequest) {
-    this.client = client;
-    this.originalRequest = originalRequest;
-  }
+    // Guarded by this.
+    private boolean executed;
 
-  @Override public Request request() {
-    return originalRequest;
-  }
-
-  @Override public Response execute() throws IOException {
-    synchronized (this) {
-      if (executed) throw new IllegalStateException("Already Executed");
-      executed = true;
-    }
-    try {
-      client.dispatcher().executed(this);
-      Response result = getResponseWithInterceptorChain();
-      if (result == null) throw new IOException("Canceled");
-      return result;
-    } finally {
-      client.dispatcher().finished(this);
-    }
-  }
-
-  synchronized void setForWebSocket() {
-    if (executed) throw new IllegalStateException("Already Executed");
-    this.forWebSocket = true;
-  }
-
-  @Override public void enqueue(Callback responseCallback) {
-    synchronized (this) {
-      if (executed) throw new IllegalStateException("Already Executed");
-      executed = true;
-    }
-    client.dispatcher().enqueue(new AsyncCall(responseCallback));
-  }
-
-  @Override public void cancel() {
-    canceled = true;
-    if (engine != null) engine.cancel();
-  }
-
-  @Override public synchronized boolean isExecuted() {
-    return executed;
-  }
-
-  @Override public boolean isCanceled() {
-    return canceled;
-  }
-
-  final class AsyncCall extends NamedRunnable {
-    private final Callback responseCallback;
-
-    private AsyncCall(Callback responseCallback) {
-      super("OkHttp %s", redactedUrl().toString());
-      this.responseCallback = responseCallback;
+    private RealCall(OkHttpClient client, Request originalRequest, boolean forWebSocket) {
+        this.client = client;
+        this.originalRequest = originalRequest;
+        this.forWebSocket = forWebSocket;
+        this.retryAndFollowUpInterceptor = new RetryAndFollowUpInterceptor(client, forWebSocket);
     }
 
-    String host() {
-      return originalRequest.url().host();
+    static RealCall newRealCall(OkHttpClient client, Request originalRequest, boolean forWebSocket) {
+        // Safely publish the Call instance to the EventListener.
+        RealCall call = new RealCall(client, originalRequest, forWebSocket);
+        call.eventListener = client.eventListenerFactory().create(call);
+        return call;
     }
 
-    Request request() {
-      return originalRequest;
+    @Override
+    public Request request() {
+        return originalRequest;
     }
 
-    void cancel() {
-      RealCall.this.cancel();
-    }
-
-    RealCall get() {
-      return RealCall.this;
-    }
-
-    @Override protected void execute() {
-      boolean signalledCallback = false;
-      try {
-        Response response = getResponseWithInterceptorChain();
-        if (canceled) {
-          signalledCallback = true;
-          responseCallback.onFailure(RealCall.this, new IOException("Canceled"));
-        } else {
-          signalledCallback = true;
-          responseCallback.onResponse(RealCall.this, response);
+    @Override
+    public Response execute() throws IOException {
+        synchronized (this) {
+            if (executed) throw new IllegalStateException("Already Executed");
+            executed = true;
         }
-      } catch (IOException e) {
-        if (signalledCallback) {
-          // Do not signal the callback twice!
-          Platform.get().log(INFO, "Callback failure for " + toLoggableString(), e);
-        } else {
-          responseCallback.onFailure(RealCall.this, e);
-        }
-      } finally {
-        client.dispatcher().finished(this);
-      }
-    }
-  }
-
-  /**
-   * Returns a string that describes this call. Doesn't include a full URL as that might contain
-   * sensitive information.
-   */
-  private String toLoggableString() {
-    String string = canceled ? "canceled call" : "call";
-    return string + " to " + redactedUrl();
-  }
-
-  HttpUrl redactedUrl() {
-    return originalRequest.url().resolve("/...");
-  }
-
-  private Response getResponseWithInterceptorChain() throws IOException {
-    Interceptor.Chain chain = new ApplicationInterceptorChain(0, originalRequest);
-    return chain.proceed(originalRequest);
-  }
-
-  class ApplicationInterceptorChain implements Interceptor.Chain {
-    private final int index;
-    private final Request request;
-
-    ApplicationInterceptorChain(int index, Request request) {
-      this.index = index;
-      this.request = request;
-    }
-
-    @Override public Connection connection() {
-      return null;
-    }
-
-    @Override public Request request() {
-      return request;
-    }
-
-    @Override public Response proceed(Request request) throws IOException {
-      Interceptor.Chain chain = new ApplicationInterceptorChain(index + 1, request);
-
-      // If there's another interceptor in the chain, call that.
-      if (index < client.interceptors().size()) {
-        Interceptor interceptor = client.interceptors().get(index);
-        Response interceptedResponse = interceptor.intercept(chain);
-
-        if (interceptedResponse == null) {
-          throw new NullPointerException("application interceptor " + interceptor
-              + " returned null");
-        }
-
-        return interceptedResponse;
-      }
-
-      // No more interceptors. Do HTTP.
-      return new RetryAndFollowUpInterceptor().intercept(chain);
-    }
-  }
-
-  /**
-   * Performs the request and returns the response. May throw if this call was canceled. This isn't
-   * a regular interceptor because it doesn't delegate to the chain.
-   */
-  class RetryAndFollowUpInterceptor implements Interceptor {
-    @Override public Response intercept(Chain chain) throws IOException {
-      Request request = chain.request();
-
-      // Copy body metadata to the appropriate request headers.
-      RequestBody body = request.body();
-      if (body != null) {
-        Request.Builder requestBuilder = request.newBuilder();
-
-        MediaType contentType = body.contentType();
-        if (contentType != null) {
-          requestBuilder.header("Content-Type", contentType.toString());
-        }
-
-        long contentLength = body.contentLength();
-        if (contentLength != -1) {
-          requestBuilder.header("Content-Length", Long.toString(contentLength));
-          requestBuilder.removeHeader("Transfer-Encoding");
-        } else {
-          requestBuilder.header("Transfer-Encoding", "chunked");
-          requestBuilder.removeHeader("Content-Length");
-        }
-
-        request = requestBuilder.build();
-      }
-
-      // Create the initial HTTP engine. Retries and redirects need new engine for each attempt.
-      engine = new HttpEngine(client, request.url(), forWebSocket, null, null);
-
-      int followUpCount = 0;
-      while (true) {
-        if (canceled) {
-          engine.releaseStreamAllocation();
-          throw new IOException("Canceled");
-        }
-
-        Response response = null;
-        boolean releaseConnection = true;
+        captureCallStackTrace();
+        eventListener.callStart(this);
         try {
-          response = engine.proceed(request);
-          releaseConnection = false;
-        } catch (RouteException e) {
-          // The attempt to connect via a route failed. The request will not have been sent.
-          HttpEngine retryEngine = engine.recover(e.getLastConnectException(), true, null);
-          if (retryEngine != null) {
-            releaseConnection = false;
-            engine = retryEngine;
-            continue;
-          }
-          // Give up; recovery is not possible.
-          throw e.getLastConnectException();
+            client.dispatcher().executed(this);
+            Response result = getResponseWithInterceptorChain();
+            if (result == null) throw new IOException("Canceled");
+            return result;
         } catch (IOException e) {
-          // An attempt to communicate with a server failed. The request may have been sent.
-          HttpEngine retryEngine = engine.recover(e, false, null);
-          if (retryEngine != null) {
-            releaseConnection = false;
-            engine = retryEngine;
-            continue;
-          }
-
-          // Give up; recovery is not possible.
-          throw e;
+            eventListener.callFailed(this, e);
+            throw e;
         } finally {
-          // We're throwing an unchecked exception. Release any resources.
-          if (releaseConnection) {
-            StreamAllocation streamAllocation = engine.close(null);
-            streamAllocation.release();
-          }
+            client.dispatcher().finished(this);
         }
-
-        Request followUp = engine.followUpRequest(response);
-
-        if (followUp == null) {
-          if (!forWebSocket) {
-            engine.releaseStreamAllocation();
-          }
-          return response;
-        }
-
-        StreamAllocation streamAllocation = engine.close(response);
-
-        if (++followUpCount > MAX_FOLLOW_UPS) {
-          streamAllocation.release();
-          throw new ProtocolException("Too many follow-up requests: " + followUpCount);
-        }
-
-        if (followUp.body() instanceof UnrepeatableRequestBody) {
-          throw new HttpRetryException("Cannot retry streamed HTTP body", response.code());
-        }
-
-        if (!engine.sameConnection(response, followUp.url())) {
-          streamAllocation.release();
-          streamAllocation = null;
-        } else if (streamAllocation.stream() != null) {
-          throw new IllegalStateException("Closing the body of " + response
-              + " didn't close its backing stream. Bad interceptor?");
-        }
-
-        request = followUp;
-        engine = new HttpEngine(client, request.url(), forWebSocket, streamAllocation,
-            response);
-      }
     }
-  }
+
+    private void captureCallStackTrace() {
+        Object callStackTrace = Platform.get().getStackTraceForCloseable("response.body().close()");
+        retryAndFollowUpInterceptor.setCallStackTrace(callStackTrace);
+    }
+
+    @Override
+    public void enqueue(Callback responseCallback) {
+        synchronized (this) {
+            if (executed) throw new IllegalStateException("Already Executed");
+            executed = true;
+        }
+        captureCallStackTrace();
+        eventListener.callStart(this);
+        client.dispatcher().enqueue(new AsyncCall(responseCallback));
+    }
+
+    @Override
+    public void cancel() {
+        retryAndFollowUpInterceptor.cancel();
+    }
+
+    @Override
+    public synchronized boolean isExecuted() {
+        return executed;
+    }
+
+    @Override
+    public boolean isCanceled() {
+        return retryAndFollowUpInterceptor.isCanceled();
+    }
+
+    @SuppressWarnings("CloneDoesntCallSuperClone")
+    // We are a final type & this saves clearing state.
+    @Override
+    public RealCall clone() {
+        return RealCall.newRealCall(client, originalRequest, forWebSocket);
+    }
+
+    StreamAllocation streamAllocation() {
+        return retryAndFollowUpInterceptor.streamAllocation();
+    }
+
+    final class AsyncCall extends NamedRunnable {
+        private final Callback responseCallback;
+
+        AsyncCall(Callback responseCallback) {
+            super("OkHttp %s", redactedUrl());
+            this.responseCallback = responseCallback;
+        }
+
+        String host() {
+            return originalRequest.url().host();
+        }
+
+        Request request() {
+            return originalRequest;
+        }
+
+        RealCall get() {
+            return RealCall.this;
+        }
+
+        @Override
+        protected void execute() {
+            boolean signalledCallback = false;
+            try {
+                Response response = getResponseWithInterceptorChain();
+                if (retryAndFollowUpInterceptor.isCanceled()) {
+                    signalledCallback = true;
+                    responseCallback.onFailure(RealCall.this, new IOException("Canceled"));
+                } else {
+                    signalledCallback = true;
+                    responseCallback.onResponse(RealCall.this, response);
+                }
+            } catch (IOException e) {
+                if (signalledCallback) {
+                    // Do not signal the callback twice!
+                    Platform.get().log(INFO, "Callback failure for " + toLoggableString(), e);
+                } else {
+                    eventListener.callFailed(RealCall.this, e);
+                    responseCallback.onFailure(RealCall.this, e);
+                }
+            } finally {
+                client.dispatcher().finished(this);
+            }
+        }
+    }
+
+    /**
+     * Returns a string that describes this call. Doesn't include a full URL as that might contain
+     * sensitive information.
+     */
+    String toLoggableString() {
+        return (isCanceled() ? "canceled " : "")
+                + (forWebSocket ? "web socket" : "call")
+                + " to " + redactedUrl();
+    }
+
+    String redactedUrl() {
+        return originalRequest.url().redact();
+    }
+
+    Response getResponseWithInterceptorChain() throws IOException {
+        // Build a full stack of interceptors.
+        List<Interceptor> interceptors = new ArrayList<>();
+        interceptors.addAll(client.interceptors());
+        interceptors.add(retryAndFollowUpInterceptor);
+        interceptors.add(new BridgeInterceptor(client.cookieJar()));
+        interceptors.add(new CacheInterceptor(client.internalCache()));
+        interceptors.add(new ConnectInterceptor(client));
+        if (!forWebSocket) {
+            interceptors.addAll(client.networkInterceptors());
+        }
+        interceptors.add(new CallServerInterceptor(forWebSocket));
+
+        Interceptor.Chain chain = new RealInterceptorChain(interceptors, null, null, null, 0,
+                originalRequest, this, eventListener, client.connectTimeoutMillis(),
+                client.readTimeoutMillis(), client.writeTimeoutMillis());
+
+        return chain.proceed(originalRequest);
+    }
 }

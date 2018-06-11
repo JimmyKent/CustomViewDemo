@@ -17,9 +17,10 @@
 package okhttp3;
 
 import java.net.Socket;
+import android.support.annotation.Nullable;
 
 /**
- * The sockets and streams of an HTTP, HTTPS, or HTTPS+SPDY connection. May be used for multiple
+ * The sockets and streams of an HTTP, HTTPS, or HTTPS+HTTP/2 connection. May be used for multiple
  * HTTP request/response exchanges. Connections may be direct to the origin server or via a proxy.
  *
  * <p>Typically instances of this class are created, connected and exercised automatically by the
@@ -37,8 +38,8 @@ import java.net.Socket;
  * <ul>
  *     <li>Server Name Indication (SNI) enables one IP address to negotiate secure connections for
  *         multiple domain names.
- *     <li>Application Layer Protocol Negotiation (ALPN) enables the HTTPS port (443) to be used for
- *         different HTTP and SPDY protocols.
+ *     <li>Application Layer Protocol Negotiation (ALPN) enables the HTTPS port (443) to be used to
+ *         negotiate HTTP/2.
  * </ul>
  *
  * <p>Unfortunately, older HTTPS servers refuse to connect when such options are presented. Rather
@@ -47,11 +48,11 @@ import java.net.Socket;
  *
  * <h3>Connection Reuse</h3>
  *
- * <p>Each connection can carry a varying number streams, depending on the underlying protocol being
- * used. HTTP/1.x connections can carry either zero or one streams. HTTP/2 connections can carry any
- * number of streams, dynamically configured with {@code SETTINGS_MAX_CONCURRENT_STREAMS}. A
- * connection currently carrying zero streams is an idle stream. We keep it alive because reusing an
- * existing connection is typically faster than establishing a new one.
+ * <p>Each connection can carry a varying number of streams, depending on the underlying protocol
+ * being used. HTTP/1.x connections can carry either zero or one streams. HTTP/2 connections can
+ * carry any number of streams, dynamically configured with {@code SETTINGS_MAX_CONCURRENT_STREAMS}.
+ * A connection currently carrying zero streams is an idle stream. We keep it alive because reusing
+ * an existing connection is typically faster than establishing a new one.
  *
  * <p>When a single logical call requires multiple streams due to redirects or authorization
  * challenges, we prefer to use the same physical connection for all streams in the sequence. There
@@ -73,7 +74,7 @@ public interface Connection {
 
   /**
    * Returns the socket that this connection is using. Returns an {@linkplain
-   * javax.net.ssl.SSLSocket SSL socket} if this connection is HTTPS. If this is an HTTP/2 or SPDY
+   * javax.net.ssl.SSLSocket SSL socket} if this connection is HTTPS. If this is an HTTP/2
    * connection the socket may be shared by multiple concurrent calls.
    */
   Socket socket();
@@ -82,7 +83,7 @@ public interface Connection {
    * Returns the TLS handshake used to establish this connection, or null if the connection is not
    * HTTPS.
    */
-  Handshake handshake();
+  @Nullable Handshake handshake();
 
   /**
    * Returns the protocol negotiated by this connection, or {@link Protocol#HTTP_1_1} if no protocol

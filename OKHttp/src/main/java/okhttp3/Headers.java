@@ -21,12 +21,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
+import android.support.annotation.Nullable;
 import okhttp3.internal.Util;
 import okhttp3.internal.http.HttpDate;
 
@@ -49,7 +50,7 @@ import okhttp3.internal.http.HttpDate;
 public final class Headers {
   private final String[] namesAndValues;
 
-  private Headers(Builder builder) {
+  Headers(Builder builder) {
     this.namesAndValues = builder.namesAndValues.toArray(new String[builder.namesAndValues.size()]);
   }
 
@@ -58,7 +59,7 @@ public final class Headers {
   }
 
   /** Returns the last value corresponding to the specified field, or null. */
-  public String get(String name) {
+  public @Nullable String get(String name) {
     return get(namesAndValues, name);
   }
 
@@ -66,7 +67,7 @@ public final class Headers {
    * Returns the last value corresponding to the specified field parsed as an HTTP date, or null if
    * either the field is absent or cannot be parsed as a date.
    */
-  public Date getDate(String name) {
+  public @Nullable Date getDate(String name) {
     String value = get(name);
     return value != null ? HttpDate.parse(value) : null;
   }
@@ -109,6 +110,23 @@ public final class Headers {
         : Collections.<String>emptyList();
   }
 
+  /**
+   * Returns the number of bytes required to encode these headers using HTTP/1.1. This is also the
+   * approximate size of HTTP/2 headers before they are compressed with HPACK. This value is
+   * intended to be used as a metric: smaller headers are more efficient to encode and transmit.
+   */
+  public long byteCount() {
+    // Each header name has 2 bytes of overhead for ': ' and every header value has 2 bytes of
+    // overhead for '\r\n'.
+    long result = namesAndValues.length * 2;
+
+    for (int i = 0, size = namesAndValues.length; i < size; i++) {
+      result += namesAndValues[i].length();
+    }
+
+    return result;
+  }
+
   public Builder newBuilder() {
     Builder result = new Builder();
     Collections.addAll(result.namesAndValues, namesAndValues);
@@ -141,7 +159,7 @@ public final class Headers {
    * Applications that require semantically equal headers should convert them into a canonical form
    * before comparing them for equality.
    */
-  @Override public boolean equals(Object other) {
+  @Override public boolean equals(@Nullable Object other) {
     return other instanceof Headers
         && Arrays.equals(((Headers) other).namesAndValues, namesAndValues);
   }
@@ -159,7 +177,7 @@ public final class Headers {
   }
 
   public Map<String, List<String>> toMultimap() {
-    Map<String, List<String>> result = new LinkedHashMap<>();
+    Map<String, List<String>> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     for (int i = 0, size = size(); i < size; i++) {
       String name = name(i).toLowerCase(Locale.US);
       List<String> values = result.get(name);
@@ -237,7 +255,7 @@ public final class Headers {
   }
 
   public static final class Builder {
-    private final List<String> namesAndValues = new ArrayList<>(20);
+    final List<String> namesAndValues = new ArrayList<>(20);
 
     /**
      * Add a header line without any validation. Only appropriate for headers from the remote peer
@@ -308,15 +326,15 @@ public final class Headers {
       if (name.isEmpty()) throw new IllegalArgumentException("name is empty");
       for (int i = 0, length = name.length(); i < length; i++) {
         char c = name.charAt(i);
-        if (c <= '\u001f' || c >= '\u007f') {
+        if (c <= '\u0020' || c >= '\u007f') {
           throw new IllegalArgumentException(Util.format(
               "Unexpected char %#04x at %d in header name: %s", (int) c, i, name));
         }
       }
-      if (value == null) throw new NullPointerException("value == null");
+      if (value == null) throw new NullPointerException("value for name " + name + " == null");
       for (int i = 0, length = value.length(); i < length; i++) {
         char c = value.charAt(i);
-        if (c <= '\u001f' || c >= '\u007f') {
+        if ((c <= '\u001f' && c != '\t') || c >= '\u007f') {
           throw new IllegalArgumentException(Util.format(
               "Unexpected char %#04x at %d in %s value: %s", (int) c, i, name, value));
         }

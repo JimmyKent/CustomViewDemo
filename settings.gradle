@@ -1,1 +1,2 @@
-include ':app', "GifView", "LogModule", "Permission"
+include ':app', /*':classloader',*/ "GifView", "LogModule", "Permission"
+//include "OkHttp"

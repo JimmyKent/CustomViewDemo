@@ -20,11 +20,15 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import android.support.annotation.Nullable;
 import javax.net.ssl.SSLPeerUnverifiedException;
-import okhttp3.internal.Util;
 import okhttp3.internal.tls.CertificateChainCleaner;
 import okio.ByteString;
+
+import static okhttp3.internal.Util.equal;
 
 /**
  * Constrains which certificates are trusted. Pinning certificates defends against attacks on
@@ -124,12 +128,25 @@ import okio.ByteString;
 public final class CertificatePinner {
   public static final CertificatePinner DEFAULT = new Builder().build();
 
-  private final List<Pin> pins;
-  private final CertificateChainCleaner certificateChainCleaner;
+  private final Set<Pin> pins;
+  private final @Nullable CertificateChainCleaner certificateChainCleaner;
 
-  private CertificatePinner(List<Pin> pins, CertificateChainCleaner certificateChainCleaner) {
+  CertificatePinner(Set<Pin> pins, @Nullable CertificateChainCleaner certificateChainCleaner) {
     this.pins = pins;
     this.certificateChainCleaner = certificateChainCleaner;
+  }
+
+  @Override public boolean equals(@Nullable Object other) {
+    if (other == this) return true;
+    return other instanceof CertificatePinner
+        && (equal(certificateChainCleaner, ((CertificatePinner) other).certificateChainCleaner)
+        && pins.equals(((CertificatePinner) other).pins));
+  }
+
+  @Override public int hashCode() {
+    int result = certificateChainCleaner != null ? certificateChainCleaner.hashCode() : 0;
+    result = 31 * result + pins.hashCode();
+    return result;
   }
 
   /**
@@ -165,7 +182,7 @@ public final class CertificatePinner {
           if (sha1 == null) sha1 = sha1(x509Certificate);
           if (pin.hash.equals(sha1)) return; // Success!
         } else {
-          throw new AssertionError();
+          throw new AssertionError("unsupported hashAlgorithm: " + pin.hashAlgorithm);
         }
       }
     }
@@ -209,10 +226,11 @@ public final class CertificatePinner {
   }
 
   /** Returns a certificate pinner that uses {@code certificateChainCleaner}. */
-  CertificatePinner withCertificateChainCleaner(CertificateChainCleaner certificateChainCleaner) {
-    return this.certificateChainCleaner != certificateChainCleaner
-        ? new CertificatePinner(pins, certificateChainCleaner)
-        : this;
+  CertificatePinner withCertificateChainCleaner(
+      @Nullable CertificateChainCleaner certificateChainCleaner) {
+    return equal(this.certificateChainCleaner, certificateChainCleaner)
+        ? this
+        : new CertificatePinner(pins, certificateChainCleaner);
   }
 
   /**
@@ -229,11 +247,11 @@ public final class CertificatePinner {
   }
 
   static ByteString sha1(X509Certificate x509Certificate) {
-    return Util.sha1(ByteString.of(x509Certificate.getPublicKey().getEncoded()));
+    return ByteString.of(x509Certificate.getPublicKey().getEncoded()).sha1();
   }
 
   static ByteString sha256(X509Certificate x509Certificate) {
-    return Util.sha256(ByteString.of(x509Certificate.getPublicKey().getEncoded()));
+    return ByteString.of(x509Certificate.getPublicKey().getEncoded()).sha256();
   }
 
   static final class Pin {
@@ -270,7 +288,8 @@ public final class CertificatePinner {
     boolean matches(String hostname) {
       if (pattern.startsWith(WILDCARD)) {
         int firstDot = hostname.indexOf('.');
-        return hostname.regionMatches(false, firstDot + 1, canonicalHostname, 0,
+        return (hostname.length() - firstDot - 1) == canonicalHostname.length()
+            && hostname.regionMatches(false, firstDot + 1, canonicalHostname, 0,
             canonicalHostname.length());
       }
 
@@ -319,7 +338,7 @@ public final class CertificatePinner {
     }
 
     public CertificatePinner build() {
-      return new CertificatePinner(Util.immutableList(pins), null);
+      return new CertificatePinner(new LinkedHashSet<>(pins), null);
     }
   }
 }

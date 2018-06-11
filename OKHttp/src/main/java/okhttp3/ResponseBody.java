@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import android.support.annotation.Nullable;
 import okhttp3.internal.Util;
 import okio.Buffer;
 import okio.BufferedSource;
@@ -47,7 +48,7 @@ import static okhttp3.internal.Util.UTF_8;
  *   <li>Response.body().close()</li>
  *   <li>Response.body().source().close()</li>
  *   <li>Response.body().charStream().close()</li>
- *   <li>Response.body().byteString().close()</li>
+ *   <li>Response.body().byteStream().close()</li>
  *   <li>Response.body().bytes()</li>
  *   <li>Response.body().string()</li>
  * </ul>
@@ -102,7 +103,7 @@ public abstract class ResponseBody implements Closeable {
   /** Multiple calls to {@link #charStream()} must return the same instance. */
   private Reader reader;
 
-  public abstract MediaType contentType();
+  public abstract @Nullable MediaType contentType();
 
   /**
    * Returns the number of bytes in that will returned by {@link #bytes}, or {@link #byteStream}, or
@@ -116,6 +117,13 @@ public abstract class ResponseBody implements Closeable {
 
   public abstract BufferedSource source();
 
+  /**
+   * Returns the response as a byte array.
+   *
+   * <p>This method loads entire response body into memory. If the response body is very large this
+   * may trigger an {@link OutOfMemoryError}. Prefer to stream the response body if this is a
+   * possibility for your response.
+   */
   public final byte[] bytes() throws IOException {
     long contentLength = contentLength();
     if (contentLength > Integer.MAX_VALUE) {
@@ -130,7 +138,11 @@ public abstract class ResponseBody implements Closeable {
       Util.closeQuietly(source);
     }
     if (contentLength != -1 && contentLength != bytes.length) {
-      throw new IOException("Content-Length and stream length disagree");
+      throw new IOException("Content-Length ("
+          + contentLength
+          + ") and stream length ("
+          + bytes.length
+          + ") disagree");
     }
     return bytes;
   }
@@ -138,20 +150,32 @@ public abstract class ResponseBody implements Closeable {
   /**
    * Returns the response as a character stream decoded with the charset of the Content-Type header.
    * If that header is either absent or lacks a charset, this will attempt to decode the response
-   * body as UTF-8.
+   * body in accordance to <a href="https://en.wikipedia.org/wiki/Byte_order_mark">its BOM</a> or
+   * UTF-8.
    */
   public final Reader charStream() {
     Reader r = reader;
-    return r != null ? r : (reader = new InputStreamReader(byteStream(), charset()));
+    return r != null ? r : (reader = new BomAwareReader(source(), charset()));
   }
 
   /**
    * Returns the response as a string decoded with the charset of the Content-Type header. If that
-   * header is either absent or lacks a charset, this will attempt to decode the response body as
-   * UTF-8.
+   * header is either absent or lacks a charset, this will attempt to decode the response body in
+   * accordance to <a href="https://en.wikipedia.org/wiki/Byte_order_mark">its BOM</a> or UTF-8.
+   * Closes {@link ResponseBody} automatically.
+   *
+   * <p>This method loads entire response body into memory. If the response body is very large this
+   * may trigger an {@link OutOfMemoryError}. Prefer to stream the response body if this is a
+   * possibility for your response.
    */
   public final String string() throws IOException {
-    return new String(bytes(), charset().name());
+    BufferedSource source = source();
+    try {
+      Charset charset = Util.bomAwareCharset(source, charset());
+      return source.readString(charset);
+    } finally {
+      Util.closeQuietly(source);
+    }
   }
 
   private Charset charset() {
@@ -167,7 +191,7 @@ public abstract class ResponseBody implements Closeable {
    * Returns a new response body that transmits {@code content}. If {@code contentType} is non-null
    * and lacks a charset, this will use UTF-8.
    */
-  public static ResponseBody create(MediaType contentType, String content) {
+  public static ResponseBody create(@Nullable MediaType contentType, String content) {
     Charset charset = UTF_8;
     if (contentType != null) {
       charset = contentType.charset();
@@ -181,17 +205,17 @@ public abstract class ResponseBody implements Closeable {
   }
 
   /** Returns a new response body that transmits {@code content}. */
-  public static ResponseBody create(final MediaType contentType, byte[] content) {
+  public static ResponseBody create(final @Nullable MediaType contentType, byte[] content) {
     Buffer buffer = new Buffer().write(content);
     return create(contentType, content.length, buffer);
   }
 
   /** Returns a new response body that transmits {@code content}. */
-  public static ResponseBody create(
-      final MediaType contentType, final long contentLength, final BufferedSource content) {
+  public static ResponseBody create(final @Nullable MediaType contentType,
+      final long contentLength, final BufferedSource content) {
     if (content == null) throw new NullPointerException("source == null");
     return new ResponseBody() {
-      @Override public MediaType contentType() {
+      @Override public @Nullable MediaType contentType() {
         return contentType;
       }
 
@@ -203,5 +227,38 @@ public abstract class ResponseBody implements Closeable {
         return content;
       }
     };
+  }
+
+  static final class BomAwareReader extends Reader {
+    private final BufferedSource source;
+    private final Charset charset;
+
+    private boolean closed;
+    private Reader delegate;
+
+    BomAwareReader(BufferedSource source, Charset charset) {
+      this.source = source;
+      this.charset = charset;
+    }
+
+    @Override public int read(char[] cbuf, int off, int len) throws IOException {
+      if (closed) throw new IOException("Stream closed");
+
+      Reader delegate = this.delegate;
+      if (delegate == null) {
+        Charset charset = Util.bomAwareCharset(source, this.charset);
+        delegate = this.delegate = new InputStreamReader(source.inputStream(), charset);
+      }
+      return delegate.read(cbuf, off, len);
+    }
+
+    @Override public void close() throws IOException {
+      closed = true;
+      if (delegate != null) {
+        delegate.close();
+      } else {
+        source.close();
+      }
+    }
   }
 }

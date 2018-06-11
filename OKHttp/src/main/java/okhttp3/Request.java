@@ -17,6 +17,8 @@ package okhttp3;
 
 import java.net.URL;
 import java.util.List;
+import android.support.annotation.Nullable;
+import okhttp3.internal.Util;
 import okhttp3.internal.http.HttpMethod;
 
 /**
@@ -24,15 +26,15 @@ import okhttp3.internal.http.HttpMethod;
  * immutable.
  */
 public final class Request {
-  private final HttpUrl url;
-  private final String method;
-  private final Headers headers;
-  private final RequestBody body;
-  private final Object tag;
+  final HttpUrl url;
+  final String method;
+  final Headers headers;
+  final @Nullable RequestBody body;
+  final Object tag;
 
   private volatile CacheControl cacheControl; // Lazily initialized.
 
-  private Request(Builder builder) {
+  Request(Builder builder) {
     this.url = builder.url;
     this.method = builder.method;
     this.headers = builder.headers.build();
@@ -52,7 +54,7 @@ public final class Request {
     return headers;
   }
 
-  public String header(String name) {
+  public @Nullable String header(String name) {
     return headers.get(name);
   }
 
@@ -60,7 +62,7 @@ public final class Request {
     return headers.values(name);
   }
 
-  public RequestBody body() {
+  public @Nullable RequestBody body() {
     return body;
   }
 
@@ -96,18 +98,18 @@ public final class Request {
   }
 
   public static class Builder {
-    private HttpUrl url;
-    private String method;
-    private Headers.Builder headers;
-    private RequestBody body;
-    private Object tag;
+    HttpUrl url;
+    String method;
+    Headers.Builder headers;
+    RequestBody body;
+    Object tag;
 
     public Builder() {
       this.method = "GET";
       this.headers = new Headers.Builder();
     }
 
-    private Builder(Request request) {
+    Builder(Request request) {
       this.url = request.url;
       this.method = request.method;
       this.body = request.body;
@@ -130,7 +132,7 @@ public final class Request {
     public Builder url(String url) {
       if (url == null) throw new NullPointerException("url == null");
 
-      // Silently replace websocket URLs with HTTP URLs.
+      // Silently replace web socket URLs with HTTP URLs.
       if (url.regionMatches(true, 0, "ws:", 0, 3)) {
         url = "http:" + url.substring(3);
       } else if (url.regionMatches(true, 0, "wss:", 0, 4)) {
@@ -176,6 +178,7 @@ public final class Request {
       return this;
     }
 
+    /** Removes all headers named {@code name} on this builder. */
     public Builder removeHeader(String name) {
       headers.removeAll(name);
       return this;
@@ -210,12 +213,12 @@ public final class Request {
       return method("POST", body);
     }
 
-    public Builder delete(RequestBody body) {
+    public Builder delete(@Nullable RequestBody body) {
       return method("DELETE", body);
     }
 
     public Builder delete() {
-      return delete(RequestBody.create(null, new byte[0]));
+      return delete(Util.EMPTY_REQUEST);
     }
 
     public Builder put(RequestBody body) {
@@ -226,7 +229,7 @@ public final class Request {
       return method("PATCH", body);
     }
 
-    public Builder method(String method, RequestBody body) {
+    public Builder method(String method, @Nullable RequestBody body) {
       if (method == null) throw new NullPointerException("method == null");
       if (method.length() == 0) throw new IllegalArgumentException("method.length() == 0");
       if (body != null && !HttpMethod.permitsRequestBody(method)) {

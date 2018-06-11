@@ -16,6 +16,7 @@
 package okhttp3.internal;
 
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import javax.net.ssl.SSLSocket;
 import okhttp3.Address;
@@ -25,8 +26,13 @@ import okhttp3.ConnectionSpec;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
-import okhttp3.internal.http.StreamAllocation;
-import okhttp3.internal.io.RealConnection;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.Route;
+import okhttp3.internal.cache.InternalCache;
+import okhttp3.internal.connection.RealConnection;
+import okhttp3.internal.connection.RouteDatabase;
+import okhttp3.internal.connection.StreamAllocation;
 
 /**
  * Escalate internal APIs in {@code okhttp3} so they can be used from OkHttp's implementation
@@ -47,9 +53,12 @@ public abstract class Internal {
 
   public abstract void setCache(OkHttpClient.Builder builder, InternalCache internalCache);
 
-  public abstract InternalCache internalCache(OkHttpClient client);
+  public abstract RealConnection get(ConnectionPool pool, Address address,
+      StreamAllocation streamAllocation, Route route);
 
-  public abstract RealConnection get(
+  public abstract boolean equalsNonHost(Address a, Address b);
+
+  public abstract Socket deduplicate(
       ConnectionPool pool, Address address, StreamAllocation streamAllocation);
 
   public abstract void put(ConnectionPool pool, RealConnection connection);
@@ -58,13 +67,15 @@ public abstract class Internal {
 
   public abstract RouteDatabase routeDatabase(ConnectionPool connectionPool);
 
+  public abstract int code(Response.Builder responseBuilder);
+
   public abstract void apply(ConnectionSpec tlsConfiguration, SSLSocket sslSocket,
       boolean isFallback);
 
   public abstract HttpUrl getHttpUrlChecked(String url)
       throws MalformedURLException, UnknownHostException;
 
-  public abstract StreamAllocation callEngineGetStreamAllocation(Call call);
+  public abstract StreamAllocation streamAllocation(Call call);
 
-  public abstract void setCallWebSocket(Call call);
+  public abstract Call newWebSocketCall(OkHttpClient client, Request request);
 }
